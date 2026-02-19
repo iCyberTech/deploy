@@ -30,7 +30,7 @@
             overflow: hidden;
         }
 
-        /* Sidebar */
+        /* Sidebar - Desktop only */
         .sidebar {
             width: 280px;
             background: white;
@@ -145,8 +145,9 @@
             flex: 1;
             background: white;
             overflow-y: auto;
-            padding: 20px 30px;
+            padding: 20px 30px 80px 30px; /* Added bottom padding for mobile nav */
             scrollbar-width: none;
+            position: relative;
         }
 
         .main-content::-webkit-scrollbar {
@@ -579,6 +580,49 @@
         .discover-card-distance {
             font-size: 13px;
             color: #95a5a6;
+        }
+
+        /* Bottom Navigation - Mobile Only */
+        .bottom-nav {
+            display: none;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: white;
+            border-top: 1px solid #f0f0f0;
+            padding: 10px 0 5px 0;
+            z-index: 100;
+        }
+
+        .nav-items {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            color: #95a5a6;
+            transition: color 0.2s;
+            padding: 5px 0;
+        }
+
+        .nav-item.active {
+            color: #FF6B6B;
+        }
+
+        .nav-item span {
+            font-size: 22px;
+            margin-bottom: 2px;
+        }
+
+        .nav-item small {
+            font-size: 11px;
+            font-weight: 500;
         }
 
         /* Chat Page */
@@ -1373,6 +1417,7 @@
             .app-container {
                 width: 100vw;
                 height: 100vh;
+                flex-direction: column;
             }
 
             .sidebar {
@@ -1380,8 +1425,13 @@
             }
 
             .main-content {
-                padding: 15px;
-                width: 100%;
+                padding: 15px 15px 70px 15px;
+                height: calc(100vh - 60px);
+            }
+
+            .bottom-nav {
+                display: block;
+                height: 60px;
             }
 
             .chat-back-btn {
@@ -1458,7 +1508,7 @@
         /* Small mobile devices */
         @media (max-width: 480px) {
             .main-content {
-                padding: 10px;
+                padding: 10px 10px 70px 10px;
             }
 
             .profile-card {
@@ -1503,7 +1553,7 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- Sidebar -->
+        <!-- Sidebar - Desktop only -->
         <div class="sidebar">
             <div class="sidebar-header">
                 <div class="sidebar-logo">DreamDate</div>
@@ -1553,6 +1603,32 @@
         <!-- Main Content -->
         <div class="main-content" id="mainContent">
             <!-- Content will be dynamically loaded here -->
+        </div>
+
+        <!-- Bottom Navigation - Mobile only -->
+        <div class="bottom-nav" id="bottomNav">
+            <div class="nav-items">
+                <div class="nav-item active" onclick="switchToPageMobile('home', this)">
+                    <span>🏠</span>
+                    <small>Home</small>
+                </div>
+                <div class="nav-item" onclick="switchToPageMobile('discover', this)">
+                    <span>🔍</span>
+                    <small>Discover</small>
+                </div>
+                <div class="nav-item" onclick="switchToPageMobile('swipe', this)">
+                    <span>💫</span>
+                    <small>Swipe</small>
+                </div>
+                <div class="nav-item" onclick="switchToPageMobile('matches', this)">
+                    <span>💕</span>
+                    <small>Matches</small>
+                </div>
+                <div class="nav-item" onclick="switchToPageMobile('profile', this)">
+                    <span>👤</span>
+                    <small>Profile</small>
+                </div>
+            </div>
         </div>
 
         <!-- Modals -->
@@ -1768,6 +1844,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             loadPage('home');
             updateSidebarProfile();
+            updateMobileNavActive('home');
         });
 
         function loadPage(page) {
@@ -1792,8 +1869,9 @@
                     break;
             }
             
-            // Update active menu item
+            // Update active menu items
             updateActiveMenuItem(page);
+            updateMobileNavActive(page);
             
             // Re-attach event listeners and update dynamic content
             if (page === 'home') {
@@ -1823,6 +1901,16 @@
             });
         }
 
+        function updateMobileNavActive(page) {
+            const navItems = document.querySelectorAll('.bottom-nav .nav-item');
+            navItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.querySelector('small').textContent.toLowerCase() === page) {
+                    item.classList.add('active');
+                }
+            });
+        }
+
         function updateSidebarProfile() {
             document.getElementById('sidebarName').textContent = currentUser.name;
         }
@@ -1833,6 +1921,13 @@
                 menuItems.forEach(item => item.classList.remove('active'));
                 element.classList.add('active');
             }
+            loadPage(page);
+        }
+
+        function switchToPageMobile(page, element) {
+            const navItems = document.querySelectorAll('.bottom-nav .nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
             loadPage(page);
         }
 
