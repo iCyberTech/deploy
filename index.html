@@ -139,7 +139,7 @@ body {
     font-weight: 500;
 }
 
-/* Main Content - base layout */
+/* Main Content - will be scrollable area between fixed header & bottom nav on mobile */
 .main-content {
     flex: 1;
     background: white;
@@ -153,31 +153,29 @@ body {
     display: none;
 }
 
-/* Header - desktop default */
+/* Header - becomes fixed on mobile via media query */
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 25px;
-    background: white; /* for fixed positioning on mobile */
 }
 
 .page-title {
     font-size: 28px;
     font-weight: 700;
     color: #2c3e50;
-    transition: opacity 0.8s ease; /* smooth transition for logo swap */
+    transition: all 0.5s ease;
 }
 
-/* The 8Teen logo element (hidden by default, only shown on mobile after timeout) */
-.mobile-logo-title {
-    display: none;
+/* 8teen logo style (matches sidebar logo) */
+.logo-title {
     font-size: 28px;
     font-weight: 700;
     background: linear-gradient(135deg, #FF6B6B, #4ECDC4);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    transition: opacity 0.8s ease;
+    transition: all 0.5s ease;
 }
 
 .header-icons {
@@ -614,10 +612,10 @@ body {
     width: 100%;
     background: white;
     border-top: 1px solid #f0f0f0;
-    padding: 10px 0 15px 0; /* Increased bottom padding for iOS safe area */
+    padding: 10px 0 15px 0;
     z-index: 100;
     /* iOS safe area support */
-    padding-bottom: env(safe-area-inset-bottom, 10px);
+    padding-bottom: env(safe-area-inset-bottom, 15px);
 }
 
 .nav-items {
@@ -1434,7 +1432,7 @@ body {
     }
 }
 
-/* Responsive Design */
+/* Responsive Design - Mobile fixes */
 @media (max-width: 768px) {
     body {
         background: white;
@@ -1444,7 +1442,8 @@ body {
         width: 100vw;
         height: 100vh;
         flex-direction: column;
-        overflow: hidden; /* prevent whole page scroll */
+        overflow: hidden; /* Prevent whole page scroll */
+        position: relative;
     }
 
     .sidebar {
@@ -1452,52 +1451,43 @@ body {
     }
 
     /* Fixed header on mobile */
-    .main-content {
-        padding: 0; /* remove default padding, we handle via header/scroll area */
-        height: 100vh;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden; /* main container doesn't scroll, only inner content */
-    }
-
-    /* Header becomes fixed at top */
     .header {
         position: sticky;
         top: 0;
-        z-index: 10;
         background: white;
+        z-index: 50;
         padding: 15px 15px 10px 15px;
-        margin-bottom: 0;
-        border-bottom: 1px solid #f0f2f4;
-        flex-shrink: 0;
-        /* iOS safe area */
-        padding-top: env(safe-area-inset-top, 15px);
+        margin: 0;
+        border-bottom: 1px solid #f0f0f0;
+        width: 100%;
     }
 
-    /* Scrollable content area between fixed header and bottom nav */
-    .scrollable-content {
-        flex: 1;
+    /* Main content becomes scrollable area between fixed header and bottom nav */
+    .main-content {
+        padding: 0 15px 20px 15px;
+        height: calc(100vh - 120px); /* Adjust based on header + bottom nav */
         overflow-y: auto;
-        padding: 15px 15px 20px 15px;
-        -webkit-overflow-scrolling: touch; /* smooth scroll on iOS */
+        -webkit-overflow-scrolling: touch; /* Smooth scroll on iOS */
+        margin-top: 0;
+        flex: 0 1 auto;
+        width: 100%;
     }
 
-    /* Hide original padding from sections inside scrollable */
-    .scrollable-content .profile-card:first-child {
-        margin-top: 0;
+    /* Add spacing for content inside main-content */
+    .main-content > *:first-child {
+        margin-top: 15px;
     }
 
     .bottom-nav {
         display: block;
+        height: auto;
         position: sticky;
         bottom: 0;
-        flex-shrink: 0;
         background: white;
-        width: 100%;
-        z-index: 10;
+        z-index: 100;
+        padding-bottom: env(safe-area-inset-bottom, 15px);
         border-top: 1px solid #f0f0f0;
-        padding: 10px 0 15px 0;
-        padding-bottom: env(safe-area-inset-bottom, 10px);
+        flex-shrink: 0;
     }
 
     /* Chat back button always visible */
@@ -1516,7 +1506,6 @@ body {
         width: 100vw;
         height: 100vh;
         border-radius: 0;
-        /* Prevent content from hiding behind iOS home indicator */
         padding-bottom: env(safe-area-inset-bottom, 0px);
     }
 
@@ -1651,8 +1640,8 @@ body {
 
 /* Small mobile devices */
 @media (max-width: 480px) {
-    .scrollable-content {
-        padding: 10px 10px 20px 10px;
+    .main-content {
+        padding: 0 10px 20px 10px;
     }
 
     /* Further optimized for very small screens */
@@ -2019,65 +2008,74 @@ body {
             loadPage('home');
             updateSidebarProfile();
             updateMobileNavActive('home');
-
-            // After 5 seconds, on mobile only, change home title to 8Teen logo
+            
+            // Start the timer for logo switch on mobile only
             setTimeout(() => {
-                const isMobile = window.matchMedia('(max-width: 768px)').matches;
-                if (isMobile && currentPage === 'home') {
-                    const pageTitle = document.querySelector('.page-title');
-                    if (pageTitle) {
-                        // Create logo element if not exists
-                        let logoTitle = document.querySelector('.mobile-logo-title');
-                        if (!logoTitle) {
-                            logoTitle = document.createElement('span');
-                            logoTitle.className = 'mobile-logo-title';
-                            logoTitle.textContent = '8Teen';
-                            pageTitle.parentNode.insertBefore(logoTitle, pageTitle);
-                        }
-                        // Fade out original, fade in logo
-                        pageTitle.style.opacity = '0';
-                        logoTitle.style.display = 'inline-block';
-                        // After fade, optionally remove original? We'll keep but hidden.
-                        setTimeout(() => {
-                            pageTitle.style.display = 'none';
-                        }, 800);
+                switchTitleToLogoOnMobile();
+            }, 5000);
+        });
+
+        // Function to switch page title to logo on mobile
+        function switchTitleToLogoOnMobile() {
+            // Only run on mobile (width <= 768px)
+            if (window.innerWidth <= 768) {
+                const pageTitle = document.querySelector('.page-title');
+                if (pageTitle && pageTitle.textContent === 'Home') {
+                    // Create logo element
+                    pageTitle.textContent = ''; // Clear content
+                    pageTitle.classList.add('logo-title');
+                    pageTitle.textContent = '8Teen'; // Set logo text
+                }
+            }
+        }
+
+        // Also check on resize (if someone resizes desktop to mobile after load)
+        window.addEventListener('resize', function() {
+            if (window.innerWidth <= 768) {
+                // If on mobile and title is 'Home' and not already logo, switch? We'll let the timeout handle it, but we can also switch immediately if needed
+                const pageTitle = document.querySelector('.page-title');
+                if (pageTitle && pageTitle.textContent === 'Home' && !pageTitle.classList.contains('logo-title')) {
+                    // Don't switch immediately, wait for timer? Better to keep timer behavior consistent.
+                    // We'll just let the original timer handle it, but if timer already passed, title may remain 'Home'.
+                    // So we'll check if we missed the timer
+                    if (document.querySelector('.page-title') && document.querySelector('.page-title').textContent === 'Home') {
+                        // Switch now
+                        pageTitle.textContent = '';
+                        pageTitle.classList.add('logo-title');
+                        pageTitle.textContent = '8Teen';
                     }
                 }
-            }, 5000);
+            } else {
+                // On desktop, ensure title is 'Home' if on home page
+                const pageTitle = document.querySelector('.page-title');
+                if (pageTitle && currentPage === 'home') {
+                    pageTitle.classList.remove('logo-title');
+                    pageTitle.textContent = 'Home';
+                }
+            }
         });
 
         function loadPage(page) {
             currentPage = page;
             const mainContent = document.getElementById('mainContent');
             
-            // For mobile, we wrap content in a scrollable div, but keep header outside
-            // We'll restructure: header stays in mainContent, but we need to separate.
-            // Better: modify render functions to output header + scrollable wrapper on mobile.
-            // We'll do it inside each render function based on screen size.
-            
-            // We'll create a helper to render page with fixed header on mobile.
-            const isMobile = window.matchMedia('(max-width: 768px)').matches;
-            
-            let pageHTML = '';
             switch(page) {
                 case 'home':
-                    pageHTML = renderHomePage(isMobile);
+                    mainContent.innerHTML = renderHomePage();
                     break;
                 case 'discover':
-                    pageHTML = renderDiscoverPage(isMobile);
+                    mainContent.innerHTML = renderDiscoverPage();
                     break;
                 case 'swipe':
-                    pageHTML = renderSwipePage(isMobile);
+                    mainContent.innerHTML = renderSwipePage();
                     break;
                 case 'matches':
-                    pageHTML = renderMatchesPage(isMobile);
+                    mainContent.innerHTML = renderMatchesPage();
                     break;
                 case 'profile':
-                    pageHTML = renderProfilePage(isMobile);
+                    mainContent.innerHTML = renderProfilePage();
                     break;
             }
-            
-            mainContent.innerHTML = pageHTML;
             
             // Update active menu items
             updateActiveMenuItem(page);
@@ -2091,14 +2089,20 @@ body {
                 updateSwipeCard();
                 showLoading();
                 
-                // Restore title/logo state if needed
-                const isMobile = window.matchMedia('(max-width: 768px)').matches;
-                if (isMobile) {
+                // If on mobile and timer already passed, ensure title is logo
+                if (window.innerWidth <= 768) {
                     const pageTitle = document.querySelector('.page-title');
-                    const logoTitle = document.querySelector('.mobile-logo-title');
-                    if (pageTitle && logoTitle) {
-                        // After 5s timer already set globally, but if page reloads before 5s, we handle.
-                        // We'll let the global timeout handle it.
+                    if (pageTitle && pageTitle.textContent === 'Home') {
+                        // Check if we should already be logo (if 5s passed since page load)
+                        // We'll use a small timeout to avoid race conditions
+                        setTimeout(() => {
+                            const title = document.querySelector('.page-title');
+                            if (title && title.textContent === 'Home' && !title.classList.contains('logo-title')) {
+                                title.textContent = '';
+                                title.classList.add('logo-title');
+                                title.textContent = '8Teen';
+                            }
+                        }, 100);
                     }
                 }
             } else if (page === 'matches') {
@@ -2112,19 +2116,56 @@ body {
             }
         }
 
-        // Updated render functions to include scrollable wrapper on mobile
-        function renderHomePage(isMobile) {
-            const header = `
+        function updateActiveMenuItem(page) {
+            const menuItems = document.querySelectorAll('.sidebar-menu-item');
+            menuItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.querySelector('small').textContent.toLowerCase() === page) {
+                    item.classList.add('active');
+                }
+            });
+        }
+
+        function updateMobileNavActive(page) {
+            const navItems = document.querySelectorAll('.bottom-nav .nav-item');
+            navItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.querySelector('small').textContent.toLowerCase() === page) {
+                    item.classList.add('active');
+                }
+            });
+        }
+
+        function updateSidebarProfile() {
+            document.getElementById('sidebarName').textContent = currentUser.name;
+        }
+
+        function switchToPage(page, element) {
+            if (element) {
+                const menuItems = document.querySelectorAll('.sidebar-menu-item');
+                menuItems.forEach(item => item.classList.remove('active'));
+                element.classList.add('active');
+            }
+            loadPage(page);
+        }
+
+        function switchToPageMobile(page, element) {
+            const navItems = document.querySelectorAll('.bottom-nav .nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
+            loadPage(page);
+        }
+
+        function renderHomePage() {
+            return `
                 <div class="header">
-                    <h1 class="page-title">Home</h1>
-                    <span class="mobile-logo-title" style="display:none;">8Teen</span>
+                    <h1 class="page-title" id="homePageTitle">Home</h1>
                     <div class="header-icons">
                         <span onclick="openNotifications()">🔔</span>
                         <span onclick="openSettingsModal()">⚙️</span>
                     </div>
                 </div>
-            `;
-            const content = `
+
                 <div class="profile-card" id="profileCard">
                     <div class="profile-header">
                         <div class="profile-avatar" id="profileAvatar">${currentUser.avatar}</div>
@@ -2178,16 +2219,10 @@ body {
                 <h2 class="section-title">Recent Messages 💬</h2>
                 <div class="messages-list" id="messagesList"></div>
             `;
-            
-            if (isMobile) {
-                return header + '<div class="scrollable-content">' + content + '</div>';
-            } else {
-                return '<div class="header">' + header.replace('<div class="header">', '').replace('</div>', '') + '</div>' + content;
-            }
         }
 
-        function renderDiscoverPage(isMobile) {
-            const header = `
+        function renderDiscoverPage() {
+            return `
                 <div class="header">
                     <h1 class="page-title">Discover</h1>
                     <div class="header-icons">
@@ -2195,8 +2230,7 @@ body {
                         <span onclick="openSettingsModal()">⚙️</span>
                     </div>
                 </div>
-            `;
-            const content = `
+                
                 <div class="discover-filters">
                     <span class="filter-chip active" onclick="filterDiscover('nearby', this)">Nearby</span>
                     <span class="filter-chip" onclick="filterDiscover('new', this)">New</span>
@@ -2207,15 +2241,10 @@ body {
 
                 <div class="discover-grid" id="discoverGrid"></div>
             `;
-            if (isMobile) {
-                return header + '<div class="scrollable-content">' + content + '</div>';
-            } else {
-                return header + content;
-            }
         }
 
-        function renderSwipePage(isMobile) {
-            const header = `
+        function renderSwipePage() {
+            return `
                 <div class="header">
                     <h1 class="page-title">Swipe</h1>
                     <div class="header-icons">
@@ -2223,8 +2252,7 @@ body {
                         <span onclick="openSettingsModal()">⚙️</span>
                     </div>
                 </div>
-            `;
-            const content = `
+
                 <div class="swipe-container" style="height: 500px;">
                     <div class="swipe-card" id="swipeCard">
                         <div class="card-image">
@@ -2251,15 +2279,10 @@ body {
                     <span id="swipeCount">1/${swipeProfiles.length}</span> profiles remaining
                 </div>
             `;
-            if (isMobile) {
-                return header + '<div class="scrollable-content">' + content + '</div>';
-            } else {
-                return header + content;
-            }
         }
 
-        function renderMatchesPage(isMobile) {
-            const header = `
+        function renderMatchesPage() {
+            return `
                 <div class="header">
                     <h1 class="page-title">Matches</h1>
                     <div class="header-icons">
@@ -2267,8 +2290,7 @@ body {
                         <span onclick="openSettingsModal()">⚙️</span>
                     </div>
                 </div>
-            `;
-            const content = `
+
                 <div class="discover-filters">
                     <span class="filter-chip active" onclick="filterMatches('all', this)">All</span>
                     <span class="filter-chip" onclick="filterMatches('new', this)">New</span>
@@ -2278,15 +2300,10 @@ body {
 
                 <div class="messages-list" id="allMatchesList"></div>
             `;
-            if (isMobile) {
-                return header + '<div class="scrollable-content">' + content + '</div>';
-            } else {
-                return header + content;
-            }
         }
 
-        function renderProfilePage(isMobile) {
-            const header = `
+        function renderProfilePage() {
+            return `
                 <div class="header">
                     <h1 class="page-title">My Profile</h1>
                     <div class="header-icons">
@@ -2294,8 +2311,7 @@ body {
                         <span onclick="openSettingsModal()">⚙️</span>
                     </div>
                 </div>
-            `;
-            const content = `
+
                 <div class="profile-header-section">
                     <div class="profile-large-avatar">${currentUser.avatar}</div>
                     <div class="profile-info-section">
@@ -2330,11 +2346,6 @@ body {
                     <div class="photo-item add" onclick="addPhoto()">+</div>
                 </div>
             `;
-            if (isMobile) {
-                return header + '<div class="scrollable-content">' + content + '</div>';
-            } else {
-                return header + content;
-            }
         }
 
         function renderAllMatches() {
@@ -2543,10 +2554,7 @@ body {
             `;
             
             const mainContent = document.getElementById('mainContent');
-            const scrollable = document.querySelector('.scrollable-content');
-            if (scrollable) {
-                scrollable.prepend(loadingDiv);
-            } else if (mainContent) {
+            if (mainContent) {
                 mainContent.prepend(loadingDiv);
             }
             
@@ -2910,46 +2918,6 @@ body {
                 showNotification('New message! 💬');
             }
         }, 30000);
-
-        function updateActiveMenuItem(page) {
-            const menuItems = document.querySelectorAll('.sidebar-menu-item');
-            menuItems.forEach(item => {
-                item.classList.remove('active');
-                if (item.querySelector('small').textContent.toLowerCase() === page) {
-                    item.classList.add('active');
-                }
-            });
-        }
-
-        function updateMobileNavActive(page) {
-            const navItems = document.querySelectorAll('.bottom-nav .nav-item');
-            navItems.forEach(item => {
-                item.classList.remove('active');
-                if (item.querySelector('small').textContent.toLowerCase() === page) {
-                    item.classList.add('active');
-                }
-            });
-        }
-
-        function updateSidebarProfile() {
-            document.getElementById('sidebarName').textContent = currentUser.name;
-        }
-
-        function switchToPage(page, element) {
-            if (element) {
-                const menuItems = document.querySelectorAll('.sidebar-menu-item');
-                menuItems.forEach(item => item.classList.remove('active'));
-                element.classList.add('active');
-            }
-            loadPage(page);
-        }
-
-        function switchToPageMobile(page, element) {
-            const navItems = document.querySelectorAll('.bottom-nav .nav-item');
-            navItems.forEach(item => item.classList.remove('active'));
-            element.classList.add('active');
-            loadPage(page);
-        }
     </script>
 </body>
 </html>
