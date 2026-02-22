@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <!-- Disable zooming and scaling -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>DreamDate - Dating App</title>
     <style>* {
     margin: 0;
@@ -17,6 +18,10 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    /* Prevent touch gestures that could cause zoom */
+    touch-action: pan-y pinch-zoom; /* Allow vertical pan but disable pinch-zoom? pinch-zoom is allowed by default, but we want to disable zoom. Use touch-action: pan-y; to disable pinch-zoom. */
+    touch-action: pan-y; /* Disable pinch zoom and double-tap zoom */
+    -webkit-text-size-adjust: 100%; /* Prevent font scaling */
 }
 
 /* Fullscreen Container - No borders */
@@ -144,7 +149,7 @@ body {
     flex: 1;
     background: white;
     overflow-y: auto;
-    padding: 20px 30px 80px 30px;
+    padding: 0 30px 80px 30px; /* Remove top padding, it's now on header */
     scrollbar-width: none;
     position: relative;
 }
@@ -153,13 +158,14 @@ body {
     display: none;
 }
 
-/* Header */
+/* Header - no extra space above */
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 25px;
-    /* For mobile fixed header */
+    padding: 15px 0; /* Vertical padding inside header, no margin-top */
+    margin-bottom: 15px;
+    background: white;
     z-index: 10;
 }
 
@@ -595,7 +601,7 @@ body {
     color: #95a5a6;
 }
 
-/* Bottom Navigation - Mobile Only */
+/* Bottom Navigation - Mobile Only - fixed */
 .bottom-nav {
     display: none;
     position: absolute;
@@ -604,10 +610,11 @@ body {
     width: 100%;
     background: white;
     border-top: 1px solid #f0f0f0;
-    padding: 10px 0 15px 0; /* Increased bottom padding for iOS safe area */
+    padding: 10px 0 15px 0;
     z-index: 100;
     /* iOS safe area support */
     padding-bottom: env(safe-area-inset-bottom, 10px);
+    /* Ensure it doesn't move on scroll - already absolute positioned to container, not viewport */
 }
 
 .nav-items {
@@ -1428,6 +1435,7 @@ body {
 @media (max-width: 768px) {
     body {
         background: white;
+        /* Ensure zoom is disabled - already on body */
     }
 
     .app-container {
@@ -1441,31 +1449,30 @@ body {
     }
 
     .main-content {
-        padding: 15px 15px 80px 15px; /* Increased bottom padding for iOS */
+        padding: 0 15px 80px 15px; /* No top padding, header provides spacing */
         height: calc(100vh - 60px);
         /* iOS safe area support */
         padding-bottom: calc(env(safe-area-inset-bottom, 15px) + 70px);
     }
 
-    /* Fixed header on mobile */
+    /* Fixed header on mobile - no extra space above */
     .header {
         position: sticky;
         top: 0;
         background: white;
-        padding: 10px 0;
-        margin-top: 0;
+        padding: 12px 0; /* Adequate padding, no margin */
+        margin-top: 0; /* Ensure no margin */
         margin-bottom: 15px;
         z-index: 10;
         border-bottom: 1px solid #f0f0f0;
-        /* Ensure it stays above content */
         box-shadow: 0 2px 10px rgba(0,0,0,0.02);
     }
 
     .bottom-nav {
         display: block;
         height: auto;
-        /* Ensure it sits above the home bar */
         padding-bottom: env(safe-area-inset-bottom, 10px);
+        /* Already absolute to container, won't move on scroll */
     }
 
     /* Chat back button always visible */
@@ -1620,7 +1627,7 @@ body {
 /* Small mobile devices */
 @media (max-width: 480px) {
     .main-content {
-        padding: 10px 10px 80px 10px;
+        padding: 0 10px 80px 10px;
     }
 
     /* Further optimized for very small screens */
@@ -1747,7 +1754,7 @@ body {
             <!-- Content will be dynamically loaded here -->
         </div>
 
-        <!-- Bottom Navigation - Mobile only -->
+        <!-- Bottom Navigation - Mobile only (fixed, doesn't move) -->
         <div class="bottom-nav" id="bottomNav">
             <div class="nav-items">
                 <div class="nav-item active" onclick="switchToPageMobile('home', this)">
