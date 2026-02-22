@@ -612,7 +612,7 @@ body {
     width: 100%;
     background: white;
     border-top: 1px solid #f0f0f0;
-    padding: 20px 0 15px 0;
+    padding: 10px 0 15px 0;
     z-index: 100;
     /* iOS safe area support */
     padding-bottom: env(safe-area-inset-bottom, 15px);
@@ -768,24 +768,23 @@ body {
     gap: 15px;
 }
 
-.chat-date-divider {
-    text-align: center;
-    margin: 15px 0;
-}
-
-.chat-date-divider span {
-    background: white;
-    padding: 6px 18px;
-    border-radius: 20px;
-    font-size: 12px;
-    color: #7f8c8d;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
+/* Chat message wrapper with swipe reply */
 .chat-message-wrapper {
     display: flex;
     margin-bottom: 5px;
     animation: slideIn 0.3s ease;
+    position: relative;
+    transition: transform 0.2s ease;
+    touch-action: pan-y; /* Allow vertical scroll, capture horizontal swipe */
+    user-select: none;
+    cursor: pointer;
+}
+
+.chat-message-wrapper.swiped-left {
+    transform: translateX(-30px);
+}
+.chat-message-wrapper.swiped-right {
+    transform: translateX(30px);
 }
 
 .chat-message-wrapper.sent {
@@ -802,6 +801,7 @@ body {
     border-radius: 20px;
     position: relative;
     word-wrap: break-word;
+    transition: box-shadow 0.2s;
 }
 
 .sent .chat-message-bubble {
@@ -815,6 +815,43 @@ body {
     color: #2c3e50;
     border-bottom-left-radius: 4px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+/* Reply indicator */
+.reply-indicator {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.7);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+    white-space: nowrap;
+}
+.chat-message-wrapper.swiped-left .reply-indicator-left {
+    opacity: 1;
+    left: 10px;
+}
+.chat-message-wrapper.swiped-right .reply-indicator-right {
+    opacity: 1;
+    right: 10px;
+}
+.reply-indicator-left {
+    left: 10px;
+    background: #4ECDC4;
+}
+.reply-indicator-right {
+    right: 10px;
+    background: #FF6B6B;
 }
 
 .chat-message-sender {
@@ -1869,42 +1906,45 @@ body {
                     </div>
                 </div>
 
-                <div class="chat-messages-container" id="chatMessagesContainer">
+                <div class="chat-messages-container" id="chatMessagesContainer" 
+                     on touchstart="handleTouchStart(event)" 
+                     on touchmove="handleTouchMove(event)" 
+                     on touchend="handleTouchEnd(event)">
                     <div class="chat-date-divider">
                         <span>Today</span>
                     </div>
 
-                    <div class="chat-message-wrapper received">
+                    <div class="chat-message-wrapper received" data-message-id="1" data-message-text="Hey! How are you doing today? 😊" data-sender="Emily">
                         <div class="chat-message-bubble">
                             <div class="chat-message-sender">Emily</div>
                             <div class="chat-message-text">Hey! How are you doing today? 😊</div>
-                            <div class="chat-message-time">
-                                10:30 AM
-                            </div>
+                            <div class="chat-message-time">10:30 AM</div>
                             <div class="chat-message-reactions">
                                 <span class="chat-reaction">❤️ 2</span>
                                 <span class="chat-reaction">👍 1</span>
                             </div>
                         </div>
+                        <div class="reply-indicator reply-indicator-left">↩️ Reply</div>
+                        <div class="reply-indicator reply-indicator-right">↪️ Reply</div>
                     </div>
 
-                    <div class="chat-message-wrapper sent">
+                    <div class="chat-message-wrapper sent" data-message-id="2" data-message-text="I'm doing great! Just got back from hiking 🏔️" data-sender="You">
                         <div class="chat-message-bubble">
                             <div class="chat-message-text">I'm doing great! Just got back from hiking 🏔️</div>
-                            <div class="chat-message-time">
-                                10:32 AM
-                            </div>
+                            <div class="chat-message-time">10:32 AM</div>
                         </div>
+                        <div class="reply-indicator reply-indicator-left">↩️ Reply</div>
+                        <div class="reply-indicator reply-indicator-right">↪️ Reply</div>
                     </div>
 
-                    <div class="chat-message-wrapper received">
+                    <div class="chat-message-wrapper received" data-message-id="3" data-message-text="That sounds amazing! I love hiking too." data-sender="Emily">
                         <div class="chat-message-bubble">
                             <div class="chat-message-sender">Emily</div>
                             <div class="chat-message-text">That sounds amazing! I love hiking too.</div>
-                            <div class="chat-message-time">
-                                10:33 AM
-                            </div>
+                            <div class="chat-message-time">10:33 AM</div>
                         </div>
+                        <div class="reply-indicator reply-indicator-left">↩️ Reply</div>
+                        <div class="reply-indicator reply-indicator-right">↪️ Reply</div>
                     </div>
 
                     <div class="chat-typing-indicator">
@@ -2002,6 +2042,14 @@ body {
         let selectedChatUser = null;
         let isTyping = false;
         let typingTimeout;
+
+        // Swipe reply variables
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchCurrentX = 0;
+        let isSwipingMessage = false;
+        let currentSwipedElement = null;
+        const SWIPE_THRESHOLD = 50;
 
         // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
@@ -2644,6 +2692,9 @@ body {
                 const container = document.getElementById('chatMessagesContainer');
                 const messageDiv = document.createElement('div');
                 messageDiv.className = 'chat-message-wrapper sent';
+                messageDiv.setAttribute('data-message-id', Date.now());
+                messageDiv.setAttribute('data-message-text', message);
+                messageDiv.setAttribute('data-sender', 'You');
                 
                 const time = new Date();
                 const timeString = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -2653,12 +2704,23 @@ body {
                         <div class="chat-message-text">${message}</div>
                         <div class="chat-message-time">${timeString}</div>
                     </div>
+                    <div class="reply-indicator reply-indicator-left">↩️ Reply</div>
+                    <div class="reply-indicator reply-indicator-right">↪️ Reply</div>
                 `;
+                
+                // Add touch event listeners for swipe reply
+                messageDiv.addEventListener('touchstart', handleTouchStart, { passive: true });
+                messageDiv.addEventListener('touchmove', handleTouchMove, { passive: true });
+                messageDiv.addEventListener('touchend', handleTouchEnd);
                 
                 const typingIndicator = document.querySelector('.chat-typing-indicator');
                 if (typingIndicator) {
                     typingIndicator.remove();
                 }
+                
+                // Remove typing indicator if it exists before the new message
+                const existingTyping = document.querySelector('.chat-typing-indicator');
+                if (existingTyping) existingTyping.remove();
                 
                 container.appendChild(messageDiv);
                 input.value = '';
@@ -2687,17 +2749,128 @@ body {
             
             const replyDiv = document.createElement('div');
             replyDiv.className = 'chat-message-wrapper received';
+            replyDiv.setAttribute('data-message-id', Date.now() + 1);
+            replyDiv.setAttribute('data-message-text', randomReply);
+            replyDiv.setAttribute('data-sender', selectedChatUser?.name || 'User');
             replyDiv.innerHTML = `
                 <div class="chat-message-bubble">
                     <div class="chat-message-sender">${selectedChatUser?.name || 'User'}</div>
                     <div class="chat-message-text">${randomReply}</div>
                     <div class="chat-message-time">${timeString}</div>
                 </div>
+                <div class="reply-indicator reply-indicator-left">↩️ Reply</div>
+                <div class="reply-indicator reply-indicator-right">↪️ Reply</div>
             `;
+            
+            // Add touch event listeners for swipe reply
+            replyDiv.addEventListener('touchstart', handleTouchStart, { passive: true });
+            replyDiv.addEventListener('touchmove', handleTouchMove, { passive: true });
+            replyDiv.addEventListener('touchend', handleTouchEnd);
             
             container.appendChild(replyDiv);
             container.scrollTop = container.scrollHeight;
         }
+
+        // Swipe reply functions
+        function handleTouchStart(event) {
+            const touch = event.touches[0];
+            touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
+            touchCurrentX = touchStartX;
+            currentSwipedElement = event.currentTarget;
+            
+            // Remove swiped class from any other message
+            document.querySelectorAll('.chat-message-wrapper.swiped-left, .chat-message-wrapper.swiped-right').forEach(el => {
+                el.classList.remove('swiped-left', 'swiped-right');
+            });
+        }
+
+        function handleTouchMove(event) {
+            if (!currentSwipedElement) return;
+            
+            const touch = event.touches[0];
+            touchCurrentX = touch.clientX;
+            
+            const diffX = touchCurrentX - touchStartX;
+            const diffY = Math.abs(touch.clientY - touchStartY);
+            
+            // If vertical scroll is more significant, don't treat as swipe
+            if (diffY > 20) {
+                return;
+            }
+            
+            // Limit swipe distance
+            if (Math.abs(diffX) > 30) {
+                event.preventDefault(); // Prevent scrolling while swiping horizontally
+            }
+        }
+
+        function handleTouchEnd(event) {
+            if (!currentSwipedElement) return;
+            
+            const diffX = touchCurrentX - touchStartX;
+            
+            if (Math.abs(diffX) > SWIPE_THRESHOLD) {
+                if (diffX > 0) {
+                    // Swiped right
+                    currentSwipedElement.classList.add('swiped-right');
+                    replyToMessage(currentSwipedElement, 'right');
+                } else {
+                    // Swiped left
+                    currentSwipedElement.classList.add('swiped-left');
+                    replyToMessage(currentSwipedElement, 'left');
+                }
+                
+                // Remove swipe class after animation
+                setTimeout(() => {
+                    if (currentSwipedElement) {
+                        currentSwipedElement.classList.remove('swiped-left', 'swiped-right');
+                    }
+                }, 1000);
+            }
+            
+            currentSwipedElement = null;
+            touchStartX = 0;
+            touchStartY = 0;
+            touchCurrentX = 0;
+        }
+
+        function replyToMessage(messageElement, direction) {
+            const messageText = messageElement.getAttribute('data-message-text') || 'message';
+            const sender = messageElement.getAttribute('data-sender') || 'User';
+            
+            // Set the input field with a reply placeholder
+            const inputField = document.getElementById('chatMessageInput');
+            inputField.value = `↪️ Replying to ${sender}: "${messageText.substring(0, 30)}${messageText.length > 30 ? '...' : ''}" `;
+            inputField.focus();
+            checkTyping();
+            
+            showNotification(`Replying to ${sender}`);
+        }
+
+        // Attach swipe listeners to existing messages when chat opens
+        function attachSwipeListeners() {
+            const messages = document.querySelectorAll('.chat-message-wrapper');
+            messages.forEach(msg => {
+                // Remove existing listeners to avoid duplicates
+                msg.removeEventListener('touchstart', handleTouchStart);
+                msg.removeEventListener('touchmove', handleTouchMove);
+                msg.removeEventListener('touchend', handleTouchEnd);
+                
+                // Add fresh listeners
+                msg.addEventListener('touchstart', handleTouchStart, { passive: true });
+                msg.addEventListener('touchmove', handleTouchMove, { passive: true });
+                msg.addEventListener('touchend', handleTouchEnd);
+            });
+        }
+
+        // Override openChat to attach listeners
+        const originalOpenChat = openChat;
+        openChat = function(user) {
+            originalOpenChat(user);
+            // Wait for DOM to update
+            setTimeout(attachSwipeListeners, 200);
+        };
 
         function handleChatKeyPress(event) {
             if (event.key === 'Enter' && !event.shiftKey) {
