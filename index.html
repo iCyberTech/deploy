@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>DreamDate - Dating App</title>
     <style>* {
     margin: 0;
@@ -601,8 +601,10 @@ body {
     width: 100%;
     background: white;
     border-top: 1px solid #f0f0f0;
-    padding: 10px 0 5px 0;
+    padding: 10px 0 15px 0; /* Increased bottom padding for iOS safe area */
     z-index: 100;
+    /* iOS safe area support */
+    padding-bottom: env(safe-area-inset-bottom, 10px);
 }
 
 .nav-items {
@@ -1436,21 +1438,25 @@ body {
     }
 
     .main-content {
-        padding: 15px 15px 70px 15px;
+        padding: 15px 15px 80px 15px; /* Increased bottom padding for iOS */
         height: calc(100vh - 60px);
+        /* iOS safe area support */
+        padding-bottom: calc(env(safe-area-inset-bottom, 15px) + 70px);
     }
 
     .bottom-nav {
         display: block;
-        height: 60px;
+        height: auto;
+        /* Ensure it sits above the home bar */
+        padding-bottom: env(safe-area-inset-bottom, 10px);
     }
 
-    /* Chat back button always visible, but we don't need extra override - it's already block */
+    /* Chat back button always visible */
     .chat-back-btn {
         display: block;
     }
 
-    /* Ensure chat modal takes full screen on mobile */
+    /* Ensure chat modal takes full screen on mobile with safe area */
     #chatModal.modal.active {
         display: flex;
         align-items: stretch;
@@ -1461,6 +1467,8 @@ body {
         width: 100vw;
         height: 100vh;
         border-radius: 0;
+        /* Prevent content from hiding behind iOS home indicator */
+        padding-bottom: env(safe-area-inset-bottom, 0px);
     }
 
     /* Fixed Profile Card for Mobile */
@@ -1595,7 +1603,7 @@ body {
 /* Small mobile devices */
 @media (max-width: 480px) {
     .main-content {
-        padding: 10px 10px 70px 10px;
+        padding: 10px 10px 80px 10px;
     }
 
     /* Further optimized for very small screens */
