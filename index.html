@@ -153,18 +153,47 @@ body {
     display: none;
 }
 
-/* Header */
+/* Header - Fixed on mobile */
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 25px;
+    background: white; /* Solid background for fixed header */
+    z-index: 50;
+}
+
+/* Mobile fixed header */
+@media (max-width: 768px) {
+    .main-content {
+        padding-top: 70px; /* Make room for fixed header */
+    }
+    
+    .header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        padding: 15px 15px 10px 15px;
+        margin-bottom: 0;
+        background: white;
+        border-bottom: 1px solid #f0f0f0;
+        z-index: 100;
+        /* iOS safe area */
+        padding-top: env(safe-area-inset-top, 15px);
+    }
+    
+    /* Adjust main content to account for fixed header */
+    .main-content {
+        padding-top: calc(70px + env(safe-area-inset-top, 15px));
+    }
 }
 
 .page-title {
     font-size: 28px;
     font-weight: 700;
     color: #2c3e50;
+    transition: opacity 1.5s ease-in-out; /* Smooth transition for title change */
 }
 
 .header-icons {
@@ -601,7 +630,7 @@ body {
     width: 100%;
     background: white;
     border-top: 1px solid #f0f0f0;
-    padding: 10px 0 15px 0; /* Increased bottom padding for iOS safe area */
+    padding: 10px 0 15px 0;
     z-index: 100;
     /* iOS safe area support */
     padding-bottom: env(safe-area-inset-bottom, 10px);
@@ -1438,7 +1467,7 @@ body {
     }
 
     .main-content {
-        padding: 15px 15px 80px 15px; /* Increased bottom padding for iOS */
+        padding: 80px 15px 80px 15px; /* Adjusted for fixed header */
         height: calc(100vh - 60px);
         /* iOS safe area support */
         padding-bottom: calc(env(safe-area-inset-bottom, 15px) + 70px);
@@ -1603,7 +1632,7 @@ body {
 /* Small mobile devices */
 @media (max-width: 480px) {
     .main-content {
-        padding: 10px 10px 80px 10px;
+        padding: 80px 10px 80px 10px;
     }
 
     /* Further optimized for very small screens */
@@ -1970,7 +1999,24 @@ body {
             loadPage('home');
             updateSidebarProfile();
             updateMobileNavActive('home');
+            
+            // Start title transition after 5 seconds
+            setTimeout(() => {
+                transitionHomeTitle();
+            }, 5000);
         });
+
+        // Function to transition home page title from "Home" to "8Teen"
+        function transitionHomeTitle() {
+            const titleElement = document.querySelector('.page-title');
+            if (titleElement && currentPage === 'home') {
+                titleElement.style.opacity = '0';
+                setTimeout(() => {
+                    titleElement.textContent = '8Teen';
+                    titleElement.style.opacity = '1';
+                }, 300); // Short delay during fade out
+            }
+        }
 
         function loadPage(page) {
             currentPage = page;
@@ -2005,6 +2051,18 @@ body {
                 renderMessages();
                 updateSwipeCard();
                 showLoading();
+                // Check if we need to show transitioned title (if 5 seconds already passed)
+                if (Date.now() - pageLoadTime > 5000) {
+                    const titleElement = document.querySelector('.page-title');
+                    if (titleElement) {
+                        titleElement.textContent = '8Teen';
+                    }
+                } else {
+                    // Schedule transition if not yet happened
+                    setTimeout(() => {
+                        transitionHomeTitle();
+                    }, Math.max(0, 5000 - (Date.now() - pageLoadTime)));
+                }
             } else if (page === 'matches') {
                 renderAllMatches();
             } else if (page === 'swipe') {
@@ -2015,6 +2073,9 @@ body {
                 renderInterests();
             }
         }
+
+        // Track page load time for title transition
+        const pageLoadTime = Date.now();
 
         function updateActiveMenuItem(page) {
             const menuItems = document.querySelectorAll('.sidebar-menu-item');
