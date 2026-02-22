@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>DreamDate - Dating App</title>
     <style>* {
     margin: 0;
@@ -657,7 +657,8 @@ body {
     cursor: pointer;
     color: #2c3e50;
     margin-right: 15px;
-    display: none;
+    /* Always visible on all devices */
+    display: block;
 }
 
 .chat-user-info {
@@ -1444,8 +1445,22 @@ body {
         height: 60px;
     }
 
+    /* Chat back button always visible, but we don't need extra override - it's already block */
     .chat-back-btn {
         display: block;
+    }
+
+    /* Ensure chat modal takes full screen on mobile */
+    #chatModal.modal.active {
+        display: flex;
+        align-items: stretch;
+        background: white;
+        backdrop-filter: none;
+    }
+    #chatModal .chat-page {
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0;
     }
 
     /* Fixed Profile Card for Mobile */
