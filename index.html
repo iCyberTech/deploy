@@ -1776,10 +1776,145 @@ body {
         gap: 8px;
         padding: 10px;
     }
-}</style>
+}
+
+/* Sign In / Sign Up Page Styles */
+.auth-container {
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(135deg, #FF6B6B, #4ECDC4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2000;
+}
+
+.auth-box {
+    background: white;
+    border-radius: 30px;
+    padding: 40px 30px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+    animation: slideUp 0.5s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.auth-logo {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.auth-logo h1 {
+    font-size: 42px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #FF6B6B, #4ECDC4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.auth-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+    background: #f8f9fa;
+    padding: 5px;
+    border-radius: 15px;
+}
+
+.auth-tab {
+    flex: 1;
+    padding: 12px;
+    text-align: center;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #7f8c8d;
+    transition: all 0.2s;
+}
+
+.auth-tab.active {
+    background: linear-gradient(135deg, #FF6B6B, #4ECDC4);
+    color: white;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.auth-input {
+    width: 100%;
+    padding: 15px;
+    background: #f8f9fa;
+    border: none;
+    border-radius: 12px;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.auth-input:focus {
+    outline: none;
+    background: #f0f2f4;
+}
+
+.auth-btn {
+    background: linear-gradient(135deg, #FF6B6B, #4ECDC4);
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s;
+    margin-top: 10px;
+}
+
+.auth-btn:hover {
+    transform: scale(1.02);
+}
+
+.auth-footer {
+    margin-top: 20px;
+    text-align: center;
+    color: #7f8c8d;
+    font-size: 14px;
+}
+
+.auth-footer span {
+    color: #FF6B6B;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.demo-credentials {
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 12px;
+    margin-top: 15px;
+    font-size: 12px;
+    color: #95a5a6;
+    text-align: center;
+}
+</style>
 </head>
 <body>
-    <div class="app-container">
+    <div class="app-container" id="appContainer" style="display: none;">
         <!-- Sidebar - Desktop only -->
         <div class="sidebar">
             <div class="sidebar-header">
@@ -2016,8 +2151,163 @@ body {
         </div>
     </div>
 
+    <!-- Sign In / Sign Up Page -->
+    <div class="auth-container" id="authContainer">
+        <div class="auth-box">
+            <div class="auth-logo">
+                <h1>8Teen</h1>
+            </div>
+            
+            <div class="auth-tabs">
+                <div class="auth-tab active" id="signinTab" onclick="switchAuthTab('signin')">Sign In</div>
+                <div class="auth-tab" id="signupTab" onclick="switchAuthTab('signup')">Sign Up</div>
+            </div>
+
+            <!-- Sign In Form -->
+            <div id="signinForm" style="display: block;">
+                <div class="auth-form">
+                    <input type="email" class="auth-input" id="signinEmail" placeholder="Email" value="demo@8teen.com">
+                    <input type="password" class="auth-input" id="signinPassword" placeholder="Password" value="demo123">
+                    <button class="auth-btn" onclick="signIn()">Sign In</button>
+                </div>
+                <div class="auth-footer">
+                    Don't have an account? <span onclick="switchAuthTab('signup')">Sign Up</span>
+                </div>
+            </div>
+
+            <!-- Sign Up Form -->
+            <div id="signupForm" style="display: none;">
+                <div class="auth-form">
+                    <input type="text" class="auth-input" id="signupName" placeholder="Full Name">
+                    <input type="email" class="auth-input" id="signupEmail" placeholder="Email">
+                    <input type="password" class="auth-input" id="signupPassword" placeholder="Password">
+                    <input type="password" class="auth-input" id="signupConfirmPassword" placeholder="Confirm Password">
+                    <button class="auth-btn" onclick="signUp()">Sign Up</button>
+                </div>
+                <div class="auth-footer">
+                    Already have an account? <span onclick="switchAuthTab('signin')">Sign In</span>
+                </div>
+            </div>
+
+            <div class="demo-credentials">
+                Demo: demo@8teen.com / demo123
+            </div>
+        </div>
+    </div>
+
     <script>
-        // State Management
+        // Authentication State
+        let isAuthenticated = false;
+
+        // Check if user is already authenticated (for demo, we'll check localStorage)
+        document.addEventListener('DOMContentLoaded', function() {
+            // For demo purposes, we'll show auth page by default
+            const authStatus = localStorage.getItem('isAuthenticated');
+            if (authStatus === 'true') {
+                showApp();
+            } else {
+                showAuth();
+            }
+            
+            // Initialize app after auth check
+            if (isAuthenticated) {
+                loadPage('home');
+                updateSidebarProfile();
+                updateMobileNavActive('home');
+                
+                // Start the timer for logo switch on mobile only
+                setTimeout(() => {
+                    switchTitleToLogoOnMobile();
+                }, 5000);
+            }
+        });
+
+        function showAuth() {
+            document.getElementById('authContainer').style.display = 'flex';
+            document.getElementById('appContainer').style.display = 'none';
+            isAuthenticated = false;
+        }
+
+        function showApp() {
+            document.getElementById('authContainer').style.display = 'none';
+            document.getElementById('appContainer').style.display = 'flex';
+            isAuthenticated = true;
+            localStorage.setItem('isAuthenticated', 'true');
+            
+            // Initialize app
+            loadPage('home');
+            updateSidebarProfile();
+            updateMobileNavActive('home');
+            
+            // Start the timer for logo switch on mobile only
+            setTimeout(() => {
+                switchTitleToLogoOnMobile();
+            }, 5000);
+        }
+
+        function switchAuthTab(tab) {
+            const signinTab = document.getElementById('signinTab');
+            const signupTab = document.getElementById('signupTab');
+            const signinForm = document.getElementById('signinForm');
+            const signupForm = document.getElementById('signupForm');
+
+            if (tab === 'signin') {
+                signinTab.classList.add('active');
+                signupTab.classList.remove('active');
+                signinForm.style.display = 'block';
+                signupForm.style.display = 'none';
+            } else {
+                signupTab.classList.add('active');
+                signinTab.classList.remove('active');
+                signupForm.style.display = 'block';
+                signinForm.style.display = 'none';
+            }
+        }
+
+        function signIn() {
+            const email = document.getElementById('signinEmail').value;
+            const password = document.getElementById('signinPassword').value;
+
+            // Simple validation (demo purpose)
+            if (email === 'demo@8teen.com' && password === 'demo123') {
+                showNotification('Signed in successfully! 🎉');
+                showApp();
+            } else {
+                showNotification('Invalid credentials. Use demo@8teen.com / demo123');
+            }
+        }
+
+        function signUp() {
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('signupConfirmPassword').value;
+
+            // Simple validation
+            if (!name || !email || !password) {
+                showNotification('Please fill in all fields');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showNotification('Passwords do not match');
+                return;
+            }
+
+            if (password.length < 6) {
+                showNotification('Password must be at least 6 characters');
+                return;
+            }
+
+            // Update user info with signup data
+            currentUser.name = name;
+            document.getElementById('sidebarName').textContent = name;
+            
+            showNotification('Account created successfully! 🎉');
+            showApp();
+        }
+
+        // State Management (existing code continues...)
         let currentUser = {
             name: 'Alex Johnson',
             age: 28,
@@ -2088,18 +2378,6 @@ body {
         let currentSwipedElement = null;
         const SWIPE_THRESHOLD = 50;
 
-        // Initialize the app
-        document.addEventListener('DOMContentLoaded', function() {
-            loadPage('home');
-            updateSidebarProfile();
-            updateMobileNavActive('home');
-            
-            // Start the timer for logo switch on mobile only
-            setTimeout(() => {
-                switchTitleToLogoOnMobile();
-            }, 5000);
-        });
-
         // Function to switch page title to logo on mobile
         function switchTitleToLogoOnMobile() {
             // Only run on mobile (width <= 768px)
@@ -2117,18 +2395,12 @@ body {
         // Also check on resize (if someone resizes desktop to mobile after load)
         window.addEventListener('resize', function() {
             if (window.innerWidth <= 768) {
-                // If on mobile and title is 'Home' and not already logo, switch? We'll let the timeout handle it, but we can also switch immediately if needed
                 const pageTitle = document.querySelector('.page-title');
                 if (pageTitle && pageTitle.textContent === 'Home' && !pageTitle.classList.contains('logo-title')) {
-                    // Don't switch immediately, wait for timer? Better to keep timer behavior consistent.
-                    // We'll just let the original timer handle it, but if timer already passed, title may remain 'Home'.
-                    // So we'll check if we missed the timer
-                    if (document.querySelector('.page-title') && document.querySelector('.page-title').textContent === 'Home') {
-                        // Switch now
-                        pageTitle.textContent = '';
-                        pageTitle.classList.add('logo-title');
-                        pageTitle.textContent = '8Teen';
-                    }
+                    // Switch now
+                    pageTitle.textContent = '';
+                    pageTitle.classList.add('logo-title');
+                    pageTitle.textContent = '8Teen';
                 }
             } else {
                 // On desktop, ensure title is 'Home' if on home page
@@ -2141,6 +2413,8 @@ body {
         });
 
         function loadPage(page) {
+            if (!isAuthenticated) return;
+            
             currentPage = page;
             const mainContent = document.getElementById('mainContent');
             
@@ -2178,8 +2452,6 @@ body {
                 if (window.innerWidth <= 768) {
                     const pageTitle = document.querySelector('.page-title');
                     if (pageTitle && pageTitle.textContent === 'Home') {
-                        // Check if we should already be logo (if 5s passed since page load)
-                        // We'll use a small timeout to avoid race conditions
                         setTimeout(() => {
                             const title = document.querySelector('.page-title');
                             if (title && title.textContent === 'Home' && !title.classList.contains('logo-title')) {
@@ -2226,6 +2498,8 @@ body {
         }
 
         function switchToPage(page, element) {
+            if (!isAuthenticated) return;
+            
             if (element) {
                 const menuItems = document.querySelectorAll('.sidebar-menu-item');
                 menuItems.forEach(item => item.classList.remove('active'));
@@ -2235,6 +2509,8 @@ body {
         }
 
         function switchToPageMobile(page, element) {
+            if (!isAuthenticated) return;
+            
             const navItems = document.querySelectorAll('.bottom-nav .nav-item');
             navItems.forEach(item => item.classList.remove('active'));
             element.classList.add('active');
@@ -3108,14 +3384,20 @@ body {
         function logout() {
             closeModal('settingsModal');
             showNotification('Logged out successfully');
+            
+            // Clear auth state
+            localStorage.removeItem('isAuthenticated');
+            isAuthenticated = false;
+            
+            // Show auth page
             setTimeout(() => {
-                location.reload();
+                showAuth();
             }, 1500);
         }
 
         // Simulate real-time updates
         setInterval(() => {
-            if (Math.random() > 0.7 && currentPage === 'home') {
+            if (Math.random() > 0.7 && currentPage === 'home' && isAuthenticated) {
                 const newMessage = {
                     id: Date.now(),
                     name: 'New User',
