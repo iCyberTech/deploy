@@ -1901,17 +1901,12 @@ body {
     font-weight: 600;
     cursor: pointer;
 }
-
-.demo-credentials {
-    background: #f8f9fa;
-    padding: 12px;
-    border-radius: 12px;
-    margin-top: 15px;
-    font-size: 12px;
-    color: #95a5a6;
-    text-align: center;
-}
 </style>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-functions-compat.js"></script>
 </head>
 <body>
     <div class="app-container" id="appContainer" style="display: none;">
@@ -1922,8 +1917,8 @@ body {
                 <div class="sidebar-profile" onclick="switchToPage('profile')">
                     <div class="sidebar-avatar" id="sidebarAvatar">😊</div>
                     <div class="sidebar-profile-info">
-                        <h4 id="sidebarName">Alex Johnson</h4>
-                        <p id="sidebarStatus">Online</p>
+                        <h4 id="sidebarName">Loading...</h4>
+                        <p id="sidebarStatus">Loading...</p>
                     </div>
                 </div>
             </div>
@@ -1999,19 +1994,19 @@ body {
             <div class="modal-content">
                 <h3>Edit Profile</h3>
                 <div class="modal-scroll-area">
-                    <input type="text" id="editName" placeholder="Your Name" value="Alex Johnson">
-                    <input type="number" id="editAge" placeholder="Age" value="28">
-                    <input type="text" id="editLocation" placeholder="Location" value="San Francisco">
-                    <textarea id="editBio" placeholder="Bio">Looking for meaningful connections</textarea>
+                    <input type="text" id="editName" placeholder="Your Name">
+                    <input type="number" id="editAge" placeholder="Age">
+                    <input type="text" id="editLocation" placeholder="Location">
+                    <textarea id="editBio" placeholder="Bio"></textarea>
                     <select id="editGender">
                         <option value="male">Male</option>
-                        <option value="female" selected>Female</option>
+                        <option value="female">Female</option>
                         <option value="other">Other</option>
                     </select>
                     <select id="editInterestedIn">
                         <option value="male">Men</option>
                         <option value="female">Women</option>
-                        <option value="everyone" selected>Everyone</option>
+                        <option value="everyone">Everyone</option>
                     </select>
                 </div>
                 <div class="modal-close-fixed">
@@ -2066,7 +2061,7 @@ body {
                     <div class="chat-user-info">
                         <div class="chat-user-avatar" id="chatAvatar">👤</div>
                         <div class="chat-user-details">
-                            <div class="chat-user-name" id="chatUserName">Emily</div>
+                            <div class="chat-user-name" id="chatUserName">Loading...</div>
                             <div class="chat-user-status" id="chatUserStatus">
                                 <span class="status-dot online"></span>
                                 <span class="status-online">Online</span>
@@ -2082,48 +2077,7 @@ body {
                      ontouchstart="handleTouchStart(event)" 
                      ontouchmove="handleTouchMove(event)" 
                      ontouchend="handleTouchEnd(event)">
-                    <div class="chat-date-divider">
-                        <span>Today</span>
-                    </div>
-
-                    <div class="chat-message-wrapper received" data-message-id="1" data-message-text="Hey! How are you doing today? 😊" data-sender="Emily">
-                        <div class="chat-message-bubble">
-                            <div class="chat-message-sender">Emily</div>
-                            <div class="chat-message-text">Hey! How are you doing today? 😊</div>
-                            <div class="chat-message-time">10:30 AM</div>
-                            <div class="chat-message-reactions">
-                                <span class="chat-reaction">❤️ 2</span>
-                                <span class="chat-reaction">👍 1</span>
-                            </div>
-                        </div>
-                        <div class="reply-indicator reply-indicator-left">↩️ Reply</div>
-                        <div class="reply-indicator reply-indicator-right">↪️ Reply</div>
-                    </div>
-
-                    <div class="chat-message-wrapper sent" data-message-id="2" data-message-text="I'm doing great! Just got back from hiking 🏔️" data-sender="You">
-                        <div class="chat-message-bubble">
-                            <div class="chat-message-text">I'm doing great! Just got back from hiking 🏔️</div>
-                            <div class="chat-message-time">10:32 AM</div>
-                        </div>
-                        <div class="reply-indicator reply-indicator-left">↩️ Reply</div>
-                        <div class="reply-indicator reply-indicator-right">↪️ Reply</div>
-                    </div>
-
-                    <div class="chat-message-wrapper received" data-message-id="3" data-message-text="That sounds amazing! I love hiking too." data-sender="Emily">
-                        <div class="chat-message-bubble">
-                            <div class="chat-message-sender">Emily</div>
-                            <div class="chat-message-text">That sounds amazing! I love hiking too.</div>
-                            <div class="chat-message-time">10:33 AM</div>
-                        </div>
-                        <div class="reply-indicator reply-indicator-left">↩️ Reply</div>
-                        <div class="reply-indicator reply-indicator-right">↪️ Reply</div>
-                    </div>
-
-                    <div class="chat-typing-indicator">
-                        <div class="chat-typing-dot"></div>
-                        <div class="chat-typing-dot"></div>
-                        <div class="chat-typing-dot"></div>
-                    </div>
+                    <!-- Messages will be loaded from Firebase -->
                 </div>
 
                 <div class="chat-emoji-picker" id="emojiPicker" style="display: none;">
@@ -2166,8 +2120,8 @@ body {
             <!-- Sign In Form -->
             <div id="signinForm" style="display: block;">
                 <div class="auth-form">
-                    <input type="email" class="auth-input" id="signinEmail" placeholder="Email" value="demo@8teen.com">
-                    <input type="password" class="auth-input" id="signinPassword" placeholder="Password" value="demo123">
+                    <input type="email" class="auth-input" id="signinEmail" placeholder="Email">
+                    <input type="password" class="auth-input" id="signinPassword" placeholder="Password">
                     <button class="auth-btn" onclick="signIn()">Sign In</button>
                 </div>
                 <div class="auth-footer">
@@ -2188,39 +2142,157 @@ body {
                     Already have an account? <span onclick="switchAuthTab('signin')">Sign In</span>
                 </div>
             </div>
-
-            <div class="demo-credentials">
-                Demo: demo@8teen.com / demo123
-            </div>
         </div>
     </div>
 
     <script>
-        // Authentication State
-        let isAuthenticated = false;
+        // Firebase Configuration
+        // Replace with your Firebase config
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            databaseURL: "YOUR_DATABASE_URL",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
 
-        // Check if user is already authenticated (for demo, we'll check localStorage)
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const auth = firebase.auth();
+        const functions = firebase.functions();
+
+        // State Management
+        let currentUser = null;
+        let currentPage = 'home';
+        let selectedChatUser = null;
+        let isTyping = false;
+        let typingTimeout;
+        let isAuthenticated = false;
+        let currentSwipeIndex = 0;
+
+        // Swipe reply variables
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchCurrentX = 0;
+        let currentSwipedElement = null;
+        const SWIPE_THRESHOLD = 50;
+
+        // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
-            // For demo purposes, we'll show auth page by default
-            const authStatus = localStorage.getItem('isAuthenticated');
-            if (authStatus === 'true') {
-                showApp();
-            } else {
-                showAuth();
-            }
-            
-            // Initialize app after auth check
-            if (isAuthenticated) {
-                loadPage('home');
-                updateSidebarProfile();
-                updateMobileNavActive('home');
-                
-                // Start the timer for logo switch on mobile only
-                setTimeout(() => {
-                    switchTitleToLogoOnMobile();
-                }, 5000);
-            }
+            // Check auth state
+            auth.onAuthStateChanged(async (user) => {
+                if (user) {
+                    // User is signed in
+                    isAuthenticated = true;
+                    await loadUserData(user.uid);
+                    showApp();
+                    
+                    // Load initial data from cloud functions
+                    await loadInitialData();
+                    
+                    // Start listening to real-time updates
+                    setupRealtimeListeners();
+                    
+                    loadPage('home');
+                    updateSidebarProfile();
+                    updateMobileNavActive('home');
+                    
+                    // Start the timer for logo switch on mobile only
+                    setTimeout(() => {
+                        switchTitleToLogoOnMobile();
+                    }, 5000);
+                } else {
+                    // User is signed out
+                    showAuth();
+                }
+            });
         });
+
+        // Load user data from Firebase
+        async function loadUserData(uid) {
+            try {
+                const snapshot = await database.ref(`users/${uid}`).once('value');
+                currentUser = snapshot.val() || {
+                    uid: uid,
+                    name: 'New User',
+                    age: 25,
+                    location: 'San Francisco',
+                    bio: 'Looking for meaningful connections',
+                    gender: 'female',
+                    interestedIn: 'everyone',
+                    avatar: '😊',
+                    matches: 0,
+                    likes: 0,
+                    views: '0',
+                    photos: [],
+                    interests: []
+                };
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                showNotification('Error loading user data');
+            }
+        }
+
+        // Load initial data from cloud functions
+        async function loadInitialData() {
+            try {
+                const loadDataFunction = functions.httpsCallable('loadInitialData');
+                const result = await loadDataFunction();
+                
+                // Store data in window for access
+                window.appData = result.data;
+            } catch (error) {
+                console.error('Error loading initial data:', error);
+                showNotification('Error loading app data');
+            }
+        }
+
+        // Setup real-time listeners
+        function setupRealtimeListeners() {
+            if (!currentUser) return;
+
+            // Listen for matches updates
+            database.ref(`matches/${currentUser.uid}`).on('value', (snapshot) => {
+                window.matches = snapshot.val() || [];
+                if (currentPage === 'home') {
+                    renderMatches();
+                } else if (currentPage === 'matches') {
+                    renderAllMatches();
+                }
+            });
+
+            // Listen for messages updates
+            database.ref(`messages/${currentUser.uid}`).on('value', (snapshot) => {
+                window.messages = snapshot.val() || [];
+                if (currentPage === 'home') {
+                    renderMessages();
+                }
+            });
+
+            // Listen for notifications updates
+            database.ref(`notifications/${currentUser.uid}`).on('value', (snapshot) => {
+                window.notifications = snapshot.val() || [];
+            });
+
+            // Listen for swipe profiles updates
+            database.ref('swipeProfiles').on('value', (snapshot) => {
+                window.swipeProfiles = snapshot.val() || [];
+                if (currentPage === 'swipe') {
+                    initializeSwipe();
+                }
+            });
+
+            // Listen for discover profiles updates
+            database.ref('discoverProfiles').on('value', (snapshot) => {
+                window.discoverProfiles = snapshot.val() || [];
+                if (currentPage === 'discover') {
+                    renderDiscoverGrid();
+                }
+            });
+        }
 
         function showAuth() {
             document.getElementById('authContainer').style.display = 'flex';
@@ -2232,17 +2304,6 @@ body {
             document.getElementById('authContainer').style.display = 'none';
             document.getElementById('appContainer').style.display = 'flex';
             isAuthenticated = true;
-            localStorage.setItem('isAuthenticated', 'true');
-            
-            // Initialize app
-            loadPage('home');
-            updateSidebarProfile();
-            updateMobileNavActive('home');
-            
-            // Start the timer for logo switch on mobile only
-            setTimeout(() => {
-                switchTitleToLogoOnMobile();
-            }, 5000);
         }
 
         function switchAuthTab(tab) {
@@ -2264,20 +2325,20 @@ body {
             }
         }
 
-        function signIn() {
+        async function signIn() {
             const email = document.getElementById('signinEmail').value;
             const password = document.getElementById('signinPassword').value;
 
-            // Simple validation (demo purpose)
-            if (email === 'demo@8teen.com' && password === 'demo123') {
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
                 showNotification('Signed in successfully! 🎉');
-                showApp();
-            } else {
-                showNotification('Invalid credentials. Use demo@8teen.com / demo123');
+            } catch (error) {
+                console.error('Sign in error:', error);
+                showNotification('Error signing in: ' + error.message);
             }
         }
 
-        function signUp() {
+        async function signUp() {
             const name = document.getElementById('signupName').value;
             const email = document.getElementById('signupEmail').value;
             const password = document.getElementById('signupPassword').value;
@@ -2299,86 +2360,36 @@ body {
                 return;
             }
 
-            // Update user info with signup data
-            currentUser.name = name;
-            document.getElementById('sidebarName').textContent = name;
-            
-            showNotification('Account created successfully! 🎉');
-            showApp();
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                
+                // Create user profile in database
+                await database.ref(`users/${user.uid}`).set({
+                    uid: user.uid,
+                    name: name,
+                    email: email,
+                    age: 25,
+                    location: 'San Francisco',
+                    bio: 'Looking for meaningful connections',
+                    gender: 'female',
+                    interestedIn: 'everyone',
+                    avatar: '😊',
+                    matches: 0,
+                    likes: 0,
+                    views: '0',
+                    photos: [],
+                    interests: [],
+                    createdAt: firebase.database.ServerValue.TIMESTAMP
+                });
+                
+                showNotification('Account created successfully! 🎉');
+            } catch (error) {
+                console.error('Sign up error:', error);
+                showNotification('Error creating account: ' + error.message);
+            }
         }
 
-        // State Management (existing code continues...)
-        let currentUser = {
-            name: 'Alex Johnson',
-            age: 28,
-            location: 'San Francisco',
-            bio: 'Looking for meaningful connections',
-            gender: 'female',
-            interestedIn: 'everyone',
-            avatar: '😊',
-            matches: 47,
-            likes: 128,
-            views: '1.2k',
-            photos: ['photo1', 'photo2', 'photo3'],
-            interests: ['Travel', 'Art', 'Music', 'Coffee', 'Hiking', 'Photography']
-        };
-
-        let matches = [
-            { id: 1, name: 'Emily', age: 25, avatar: '👩‍🎨', lastActive: '2m ago', online: true },
-            { id: 2, name: 'Jessica', age: 27, avatar: '👩‍💼', lastActive: '15m ago', online: false },
-            { id: 3, name: 'Michelle', age: 26, avatar: '👩‍⚕️', lastActive: '1h ago', online: true },
-            { id: 4, name: 'Amanda', age: 24, avatar: '👩‍🍳', lastActive: '3h ago', online: false },
-            { id: 5, name: 'Rachel', age: 29, avatar: '👩‍🎓', lastActive: '5h ago', online: false },
-            { id: 6, name: 'Olivia', age: 26, avatar: '👩‍🏫', lastActive: '1d ago', online: false }
-        ];
-
-        let messages = [
-            { id: 1, name: 'Emily', avatar: '👩‍🎨', message: 'Hey! How are you?', time: '5m ago', unread: true },
-            { id: 2, name: 'Jessica', avatar: '👩‍💼', message: 'Would you like to grab coffee?', time: '1h ago', unread: false },
-            { id: 3, name: 'Michelle', avatar: '👩‍⚕️', message: 'Great conversation yesterday!', time: '3h ago', unread: true },
-            { id: 4, name: 'Amanda', avatar: '👩‍🍳', message: 'Looking forward to our date', time: '1d ago', unread: false }
-        ];
-
-        let swipeProfiles = [
-            { id: 1, name: 'Sarah', age: 26, location: 'San Francisco', distance: '2 miles away', badges: ['Verified', 'Artist', 'Traveler'] },
-            { id: 2, name: 'Michael', age: 29, location: 'Los Angeles', distance: '5 miles away', badges: ['Verified', 'Musician', 'Foodie'] },
-            { id: 3, name: 'David', age: 28, location: 'New York', distance: '3 miles away', badges: ['Sports', 'Tech', 'Gym'] },
-            { id: 4, name: 'Emma', age: 25, location: 'Austin', distance: '4 miles away', badges: ['Verified', 'Writer', 'Coffee Lover'] },
-            { id: 5, name: 'James', age: 30, location: 'Seattle', distance: '6 miles away', badges: ['Photographer', 'Nature', 'Vegan'] },
-            { id: 6, name: 'Sophia', age: 27, location: 'Chicago', distance: '8 miles away', badges: ['Yoga', 'Healthy', 'Reader'] }
-        ];
-
-        let discoverProfiles = [
-            { id: 7, name: 'Chris', age: 28, distance: '1 mile', avatar: '👨‍🎨' },
-            { id: 8, name: 'Lisa', age: 26, distance: '2 miles', avatar: '👩‍💻' },
-            { id: 9, name: 'Tom', age: 31, distance: '3 miles', avatar: '👨‍🍳' },
-            { id: 10, name: 'Anna', age: 24, distance: '4 miles', avatar: '👩‍🎤' },
-            { id: 11, name: 'Mark', age: 29, distance: '5 miles', avatar: '👨‍🏫' },
-            { id: 12, name: 'Julia', age: 27, distance: '6 miles', avatar: '👩‍⚖️' }
-        ];
-
-        let notifications = [
-            { id: 1, type: 'like', title: 'New Like!', message: 'Sarah liked your profile', time: '2m ago', icon: '❤️' },
-            { id: 2, type: 'match', title: 'It\'s a Match!', message: 'You matched with Michael', time: '1h ago', icon: '💕' },
-            { id: 3, type: 'message', title: 'New Message', message: 'Emily sent you a message', time: '3h ago', icon: '💬' },
-            { id: 4, type: 'view', title: 'Profile View', message: 'Your profile was viewed 15 times', time: '5h ago', icon: '👀' }
-        ];
-
-        let currentSwipeIndex = 0;
-        let currentPage = 'home';
-        let selectedChatUser = null;
-        let isTyping = false;
-        let typingTimeout;
-
-        // Swipe reply variables
-        let touchStartX = 0;
-        let touchStartY = 0;
-        let touchCurrentX = 0;
-        let isSwipingMessage = false;
-        let currentSwipedElement = null;
-        const SWIPE_THRESHOLD = 50;
-
-        // Function to switch page title to logo on mobile
         function switchTitleToLogoOnMobile() {
             // Only run on mobile (width <= 768px)
             if (window.innerWidth <= 768) {
@@ -2392,18 +2403,15 @@ body {
             }
         }
 
-        // Also check on resize (if someone resizes desktop to mobile after load)
         window.addEventListener('resize', function() {
             if (window.innerWidth <= 768) {
                 const pageTitle = document.querySelector('.page-title');
                 if (pageTitle && pageTitle.textContent === 'Home' && !pageTitle.classList.contains('logo-title')) {
-                    // Switch now
                     pageTitle.textContent = '';
                     pageTitle.classList.add('logo-title');
                     pageTitle.textContent = '8Teen';
                 }
             } else {
-                // On desktop, ensure title is 'Home' if on home page
                 const pageTitle = document.querySelector('.page-title');
                 if (pageTitle && currentPage === 'home') {
                     pageTitle.classList.remove('logo-title');
@@ -2412,7 +2420,7 @@ body {
             }
         });
 
-        function loadPage(page) {
+        async function loadPage(page) {
             if (!isAuthenticated) return;
             
             currentPage = page;
@@ -2446,7 +2454,6 @@ body {
                 renderMatches();
                 renderMessages();
                 updateSwipeCard();
-                showLoading();
                 
                 // If on mobile and timer already passed, ensure title is logo
                 if (window.innerWidth <= 768) {
@@ -2494,7 +2501,9 @@ body {
         }
 
         function updateSidebarProfile() {
-            document.getElementById('sidebarName').textContent = currentUser.name;
+            if (!currentUser) return;
+            document.getElementById('sidebarName').textContent = currentUser.name || 'User';
+            document.getElementById('sidebarStatus').textContent = 'Online';
         }
 
         function switchToPage(page, element) {
@@ -2529,23 +2538,23 @@ body {
 
                 <div class="profile-card" id="profileCard">
                     <div class="profile-header">
-                        <div class="profile-avatar" id="profileAvatar">${currentUser.avatar}</div>
+                        <div class="profile-avatar" id="profileAvatar">${currentUser?.avatar || '😊'}</div>
                         <div class="profile-info">
-                            <h2 id="profileName">${currentUser.name}</h2>
-                            <p id="profileBio">${currentUser.age} • ${currentUser.bio}</p>
+                            <h2 id="profileName">${currentUser?.name || 'User'}</h2>
+                            <p id="profileBio">${currentUser?.age || 25} • ${currentUser?.bio || 'Looking for connections'}</p>
                         </div>
                     </div>
                     <div class="profile-stats">
                         <div class="stat">
-                            <div class="stat-number" id="matchCount">${currentUser.matches}</div>
+                            <div class="stat-number" id="matchCount">${currentUser?.matches || 0}</div>
                             <div class="stat-label">Matches</div>
                         </div>
                         <div class="stat">
-                            <div class="stat-number" id="likeCount">${currentUser.likes}</div>
+                            <div class="stat-number" id="likeCount">${currentUser?.likes || 0}</div>
                             <div class="stat-label">Likes</div>
                         </div>
                         <div class="stat">
-                            <div class="stat-number" id="viewCount">${currentUser.views}</div>
+                            <div class="stat-number" id="viewCount">${currentUser?.views || '0'}</div>
                             <div class="stat-label">Views</div>
                         </div>
                     </div>
@@ -2554,15 +2563,13 @@ body {
                 <div class="swipe-container" id="swipeContainer">
                     <div class="swipe-card" id="currentSwipeCard">
                         <div class="card-image">
-                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23FF6B6B'/%3E%3Ctext x='25' y='55' font-family='Arial' font-size='14' fill='white'%3ESarah%3C/text%3E%3C/svg%3E" alt="Profile">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23FF6B6B'/%3E%3Ctext x='25' y='55' font-family='Arial' font-size='14' fill='white'%3EProfile%3C/text%3E%3C/svg%3E" alt="Profile">
                         </div>
                         <div class="card-info">
-                            <h2 id="swipeName">Sarah, 26</h2>
-                            <p id="swipeLocation">📍 San Francisco • 2 miles away</p>
-                            <div class="card-badges">
-                                <span class="badge">✨ Verified</span>
-                                <span class="badge">🎨 Artist</span>
-                                <span class="badge">🌍 Traveler</span>
+                            <h2 id="swipeName">Loading...</h2>
+                            <p id="swipeLocation">📍 Loading...</p>
+                            <div class="card-badges" id="swipeBadges">
+                                <span class="badge">Loading...</span>
                             </div>
                         </div>
                     </div>
@@ -2620,11 +2627,10 @@ body {
                             <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23FF6B6B'/%3E%3Ctext x='25' y='55' font-family='Arial' font-size='14' fill='white'%3EProfile%3C/text%3E%3C/svg%3E" alt="Profile">
                         </div>
                         <div class="card-info">
-                            <h2 id="swipeProfileName">Sarah, 26</h2>
-                            <p id="swipeProfileLocation">📍 San Francisco • 2 miles away</p>
+                            <h2 id="swipeProfileName">Loading...</h2>
+                            <p id="swipeProfileLocation">📍 Loading...</p>
                             <div class="card-badges" id="swipeProfileBadges">
-                                <span class="badge">✨ Verified</span>
-                                <span class="badge">🎨 Artist</span>
+                                <span class="badge">Loading...</span>
                             </div>
                         </div>
                     </div>
@@ -2637,7 +2643,7 @@ body {
                 </div>
 
                 <div style="text-align: center; margin-top: 20px; color: #95A5A6;">
-                    <span id="swipeCount">1/${swipeProfiles.length}</span> profiles remaining
+                    <span id="swipeCount">0/0</span> profiles remaining
                 </div>
             `;
         }
@@ -2674,11 +2680,11 @@ body {
                 </div>
 
                 <div class="profile-header-section">
-                    <div class="profile-large-avatar">${currentUser.avatar}</div>
+                    <div class="profile-large-avatar">${currentUser?.avatar || '😊'}</div>
                     <div class="profile-info-section">
-                        <h2>${currentUser.name}, ${currentUser.age}</h2>
-                        <p>${currentUser.location}</p>
-                        <p>${currentUser.bio}</p>
+                        <h2>${currentUser?.name || 'User'}, ${currentUser?.age || 25}</h2>
+                        <p>${currentUser?.location || 'San Francisco'}</p>
+                        <p>${currentUser?.bio || 'Looking for meaningful connections'}</p>
                         <button class="edit-profile-btn" onclick="openProfileModal()">Edit Profile</button>
                     </div>
                 </div>
@@ -2686,11 +2692,11 @@ body {
                 <div class="profile-details-grid">
                     <div class="detail-card">
                         <h4>Gender</h4>
-                        <p>${currentUser.gender}</p>
+                        <p>${currentUser?.gender || 'female'}</p>
                     </div>
                     <div class="detail-card">
                         <h4>Interested In</h4>
-                        <p>${currentUser.interestedIn}</p>
+                        <p>${currentUser?.interestedIn || 'everyone'}</p>
                     </div>
                 </div>
 
@@ -2701,7 +2707,7 @@ body {
 
                 <h3>Photos</h3>
                 <div class="photos-grid">
-                    ${currentUser.photos.map(() => `
+                    ${(currentUser?.photos || []).map(() => `
                         <div class="photo-item">📸</div>
                     `).join('')}
                     <div class="photo-item add" onclick="addPhoto()">+</div>
@@ -2715,16 +2721,17 @@ body {
             
             matchesList.innerHTML = '';
             
+            const matches = window.matches || [];
             matches.forEach(match => {
                 const matchItem = document.createElement('div');
                 matchItem.className = 'message-item';
                 matchItem.onclick = () => openChat(match);
                 matchItem.innerHTML = `
-                    <div class="message-avatar">${match.avatar}</div>
+                    <div class="message-avatar">${match.avatar || '👤'}</div>
                     <div class="message-details">
                         <div class="message-header">
-                            <span class="message-name">${match.name}, ${match.age}</span>
-                            <span class="message-time">${match.lastActive}</span>
+                            <span class="message-name">${match.name || 'User'}, ${match.age || 25}</span>
+                            <span class="message-time">${match.lastActive || 'Online'}</span>
                         </div>
                         <div class="message-preview">
                             ${match.online ? '🟢 Online' : '⚫ Offline'}
@@ -2741,17 +2748,18 @@ body {
             
             discoverGrid.innerHTML = '';
             
+            const discoverProfiles = window.discoverProfiles || [];
             discoverProfiles.forEach(profile => {
                 const card = document.createElement('div');
                 card.className = 'discover-card';
                 card.onclick = () => viewProfile(profile);
                 card.innerHTML = `
                     <div class="discover-card-image">
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23FF6B6B'/%3E%3Ctext x='25' y='55' font-family='Arial' font-size='14' fill='white'%3E${profile.name}%3C/text%3E%3C/svg%3E" style="width: 100%; height: 100%; object-fit: cover;">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23FF6B6B'/%3E%3Ctext x='25' y='55' font-family='Arial' font-size='14' fill='white'%3E${profile.name || 'User'}%3C/text%3E%3C/svg%3E" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
                     <div class="discover-card-info">
-                        <div class="discover-card-name">${profile.name}, ${profile.age}</div>
-                        <div class="discover-card-distance">${profile.distance}</div>
+                        <div class="discover-card-name">${profile.name || 'User'}, ${profile.age || 25}</div>
+                        <div class="discover-card-distance">${profile.distance || 'Nearby'}</div>
                     </div>
                 `;
                 discoverGrid.appendChild(card);
@@ -2760,12 +2768,12 @@ body {
 
         function renderInterests() {
             const container = document.getElementById('interestsContainer');
-            if (!container) return;
+            if (!container || !currentUser) return;
             
             container.innerHTML = '';
             container.className = 'interest-tags';
             
-            currentUser.interests.forEach(interest => {
+            (currentUser.interests || []).forEach(interest => {
                 const tag = document.createElement('span');
                 tag.className = 'interest-tag selected';
                 tag.textContent = interest;
@@ -2781,17 +2789,19 @@ body {
         }
 
         function updateProfileDisplay() {
+            if (!currentUser) return;
+            
             const nameEl = document.getElementById('profileName');
             const bioEl = document.getElementById('profileBio');
             const matchEl = document.getElementById('matchCount');
             const likeEl = document.getElementById('likeCount');
             const viewEl = document.getElementById('viewCount');
             
-            if (nameEl) nameEl.textContent = currentUser.name;
-            if (bioEl) bioEl.textContent = `${currentUser.age} • ${currentUser.bio}`;
-            if (matchEl) matchEl.textContent = currentUser.matches;
-            if (likeEl) likeEl.textContent = currentUser.likes;
-            if (viewEl) viewEl.textContent = currentUser.views;
+            if (nameEl) nameEl.textContent = currentUser.name || 'User';
+            if (bioEl) bioEl.textContent = `${currentUser.age || 25} • ${currentUser.bio || 'Looking for connections'}`;
+            if (matchEl) matchEl.textContent = currentUser.matches || 0;
+            if (likeEl) likeEl.textContent = currentUser.likes || 0;
+            if (viewEl) viewEl.textContent = currentUser.views || '0';
         }
 
         function renderMatches() {
@@ -2800,13 +2810,14 @@ body {
             
             matchesGrid.innerHTML = '';
             
+            const matches = window.matches || [];
             matches.slice(0, 4).forEach(match => {
                 const matchItem = document.createElement('div');
                 matchItem.className = 'match-item';
                 matchItem.onclick = () => openChat(match);
                 matchItem.innerHTML = `
-                    <div class="match-avatar">${match.avatar}</div>
-                    <div class="match-name">${match.name}, ${match.age}</div>
+                    <div class="match-avatar">${match.avatar || '👤'}</div>
+                    <div class="match-name">${match.name || 'User'}, ${match.age || 25}</div>
                 `;
                 matchesGrid.appendChild(matchItem);
             });
@@ -2818,18 +2829,19 @@ body {
             
             messagesList.innerHTML = '';
             
+            const messages = window.messages || [];
             messages.forEach(msg => {
                 const messageItem = document.createElement('div');
                 messageItem.className = 'message-item';
                 messageItem.onclick = () => openChat(msg);
                 messageItem.innerHTML = `
-                    <div class="message-avatar">${msg.avatar}</div>
+                    <div class="message-avatar">${msg.avatar || '👤'}</div>
                     <div class="message-details">
                         <div class="message-header">
-                            <span class="message-name">${msg.name}</span>
-                            <span class="message-time">${msg.time}</span>
+                            <span class="message-name">${msg.name || 'User'}</span>
+                            <span class="message-time">${msg.time || 'Now'}</span>
                         </div>
-                        <div class="message-preview">${msg.message}</div>
+                        <div class="message-preview">${msg.message || 'New message'}</div>
                     </div>
                     ${msg.unread ? '<span class="unread-badge">New</span>' : ''}
                 `;
@@ -2838,18 +2850,27 @@ body {
         }
 
         function updateSwipeCard() {
+            const swipeProfiles = window.swipeProfiles || [];
+            if (swipeProfiles.length === 0) {
+                document.getElementById('swipeName').textContent = 'No more profiles';
+                document.getElementById('swipeLocation').textContent = 'Check back later';
+                return;
+            }
+            
             const profile = swipeProfiles[currentSwipeIndex];
+            if (!profile) return;
+            
             const nameEl = document.getElementById('swipeName') || document.getElementById('swipeProfileName');
             const locationEl = document.getElementById('swipeLocation') || document.getElementById('swipeProfileLocation');
-            const badgesEl = document.getElementById('swipeProfileBadges') || document.querySelector('.card-badges');
+            const badgesEl = document.getElementById('swipeBadges') || document.getElementById('swipeProfileBadges');
             const countEl = document.getElementById('swipeCount');
             
-            if (nameEl) nameEl.textContent = `${profile.name}, ${profile.age}`;
-            if (locationEl) locationEl.textContent = `📍 ${profile.location} • ${profile.distance}`;
+            if (nameEl) nameEl.textContent = `${profile.name || 'User'}, ${profile.age || 25}`;
+            if (locationEl) locationEl.textContent = `📍 ${profile.location || 'Nearby'} • ${profile.distance || 'Nearby'}`;
             
             if (badgesEl) {
                 badgesEl.innerHTML = '';
-                profile.badges.forEach(badge => {
+                (profile.badges || ['New']).forEach(badge => {
                     const badgeSpan = document.createElement('span');
                     badgeSpan.className = 'badge';
                     badgeSpan.textContent = badge;
@@ -2867,29 +2888,47 @@ body {
             updateSwipeCard();
         }
 
-        function handleSwipe(action) {
+        async function handleSwipe(action) {
             const card = document.getElementById('currentSwipeCard') || document.getElementById('swipeCard');
             
             if (action === 'like') {
                 card.style.transform = 'translateX(200%) rotate(20deg)';
                 showNotification('Liked! 💕');
                 
-                if (Math.random() > 0.7) {
-                    setTimeout(() => {
-                        showNotification('It\'s a match! 🎉');
-                    }, 500);
+                // Call cloud function to handle like
+                try {
+                    const handleSwipeFunction = functions.httpsCallable('handleSwipe');
+                    await handleSwipeFunction({ action: 'like', profileId: window.swipeProfiles[currentSwipeIndex]?.id });
+                } catch (error) {
+                    console.error('Error handling swipe:', error);
                 }
             } else if (action === 'nope') {
                 card.style.transform = 'translateX(-200%) rotate(-20deg)';
                 showNotification('Passed 👋');
+                
+                // Call cloud function to handle nope
+                try {
+                    const handleSwipeFunction = functions.httpsCallable('handleSwipe');
+                    await handleSwipeFunction({ action: 'nope', profileId: window.swipeProfiles[currentSwipeIndex]?.id });
+                } catch (error) {
+                    console.error('Error handling swipe:', error);
+                }
             } else if (action === 'super') {
                 card.style.transform = 'scale(1.1) translateY(-20px)';
                 showNotification('Super Like! ⭐');
+                
+                // Call cloud function to handle super like
+                try {
+                    const handleSwipeFunction = functions.httpsCallable('handleSwipe');
+                    await handleSwipeFunction({ action: 'super', profileId: window.swipeProfiles[currentSwipeIndex]?.id });
+                } catch (error) {
+                    console.error('Error handling swipe:', error);
+                }
             }
             
             setTimeout(() => {
                 card.style.transform = 'translateX(0) rotate(0)';
-                currentSwipeIndex = (currentSwipeIndex + 1) % swipeProfiles.length;
+                currentSwipeIndex = (currentSwipeIndex + 1) % (window.swipeProfiles?.length || 1);
                 updateSwipeCard();
             }, 300);
         }
@@ -2905,36 +2944,16 @@ body {
             }, 2000);
         }
 
-        function showLoading() {
-            const loadingDiv = document.createElement('div');
-            loadingDiv.className = 'loading';
-            loadingDiv.id = 'loadingAnimation';
-            loadingDiv.innerHTML = `
-                <div class="loading-spinner"></div>
-                <p style="color: #7F8C8D;">Finding matches...</p>
-            `;
-            
-            const mainContent = document.getElementById('mainContent');
-            if (mainContent) {
-                mainContent.prepend(loadingDiv);
-            }
-            
-            setTimeout(() => {
-                const existingLoading = document.getElementById('loadingAnimation');
-                if (existingLoading) {
-                    existingLoading.remove();
-                }
-            }, 1500);
-        }
-
-        // Modal functions (updated to work with new fixed close)
+        // Modal functions
         function openProfileModal() {
-            document.getElementById('editName').value = currentUser.name;
-            document.getElementById('editAge').value = currentUser.age;
-            document.getElementById('editLocation').value = currentUser.location;
-            document.getElementById('editBio').value = currentUser.bio;
-            document.getElementById('editGender').value = currentUser.gender;
-            document.getElementById('editInterestedIn').value = currentUser.interestedIn;
+            if (!currentUser) return;
+            
+            document.getElementById('editName').value = currentUser.name || '';
+            document.getElementById('editAge').value = currentUser.age || 25;
+            document.getElementById('editLocation').value = currentUser.location || '';
+            document.getElementById('editBio').value = currentUser.bio || '';
+            document.getElementById('editGender').value = currentUser.gender || 'female';
+            document.getElementById('editInterestedIn').value = currentUser.interestedIn || 'everyone';
             document.getElementById('profileModal').classList.add('active');
         }
 
@@ -2946,29 +2965,42 @@ body {
             document.getElementById(modalId).classList.remove('active');
         }
 
-        function saveProfile() {
-            currentUser.name = document.getElementById('editName').value;
-            currentUser.age = parseInt(document.getElementById('editAge').value);
-            currentUser.location = document.getElementById('editLocation').value;
-            currentUser.bio = document.getElementById('editBio').value;
-            currentUser.gender = document.getElementById('editGender').value;
-            currentUser.interestedIn = document.getElementById('editInterestedIn').value;
+        async function saveProfile() {
+            if (!currentUser) return;
             
-            updateProfileDisplay();
-            updateSidebarProfile();
-            closeModal('profileModal');
-            showNotification('Profile updated! ✅');
+            const updatedUser = {
+                ...currentUser,
+                name: document.getElementById('editName').value,
+                age: parseInt(document.getElementById('editAge').value),
+                location: document.getElementById('editLocation').value,
+                bio: document.getElementById('editBio').value,
+                gender: document.getElementById('editGender').value,
+                interestedIn: document.getElementById('editInterestedIn').value
+            };
             
-            if (currentPage === 'profile') {
-                loadPage('profile');
+            try {
+                await database.ref(`users/${currentUser.uid}`).update(updatedUser);
+                currentUser = updatedUser;
+                
+                updateProfileDisplay();
+                updateSidebarProfile();
+                closeModal('profileModal');
+                showNotification('Profile updated! ✅');
+                
+                if (currentPage === 'profile') {
+                    loadPage('profile');
+                }
+            } catch (error) {
+                console.error('Error saving profile:', error);
+                showNotification('Error saving profile');
             }
         }
 
         // Chat functions
-        function openChat(user) {
+        async function openChat(user) {
             selectedChatUser = user;
-            document.getElementById('chatUserName').textContent = user.name;
-            document.getElementById('chatAvatar').textContent = user.avatar;
+            document.getElementById('chatUserName').textContent = user.name || 'User';
+            document.getElementById('chatAvatar').textContent = user.avatar || '👤';
             
             const statusEl = document.getElementById('chatUserStatus');
             if (user.online) {
@@ -2979,8 +3011,18 @@ body {
             } else {
                 statusEl.innerHTML = `
                     <span class="status-dot offline"></span>
-                    <span class="status-offline">${user.lastActive}</span>
+                    <span class="status-offline">${user.lastActive || 'Offline'}</span>
                 `;
+            }
+            
+            // Load chat messages from Firebase
+            try {
+                const chatId = getChatId(currentUser.uid, user.id);
+                const snapshot = await database.ref(`chats/${chatId}/messages`).once('value');
+                const messages = snapshot.val() || [];
+                renderChatMessages(messages);
+            } catch (error) {
+                console.error('Error loading messages:', error);
             }
             
             checkTyping();
@@ -2989,8 +3031,41 @@ body {
             setTimeout(() => {
                 const container = document.getElementById('chatMessagesContainer');
                 container.scrollTop = container.scrollHeight;
-                attachSwipeListeners(); // attach swipe listeners after chat opens
+                attachSwipeListeners();
             }, 100);
+        }
+
+        function getChatId(userId1, userId2) {
+            return userId1 < userId2 ? `${userId1}_${userId2}` : `${userId2}_${userId1}`;
+        }
+
+        function renderChatMessages(messages) {
+            const container = document.getElementById('chatMessagesContainer');
+            container.innerHTML = '';
+            
+            messages.forEach(msg => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `chat-message-wrapper ${msg.senderId === currentUser.uid ? 'sent' : 'received'}`;
+                messageDiv.setAttribute('data-message-id', msg.id);
+                messageDiv.setAttribute('data-message-text', msg.text);
+                messageDiv.setAttribute('data-sender', msg.senderName);
+                
+                messageDiv.innerHTML = `
+                    <div class="chat-message-bubble">
+                        ${msg.senderId !== currentUser.uid ? `<div class="chat-message-sender">${msg.senderName}</div>` : ''}
+                        <div class="chat-message-text">${msg.text}</div>
+                        <div class="chat-message-time">${msg.time}</div>
+                    </div>
+                    <div class="reply-indicator reply-indicator-left">↩️ Reply</div>
+                    <div class="reply-indicator reply-indicator-right">↪️ Reply</div>
+                `;
+                
+                messageDiv.addEventListener('touchstart', handleTouchStart, { passive: true });
+                messageDiv.addEventListener('touchmove', handleTouchMove, { passive: true });
+                messageDiv.addEventListener('touchend', handleTouchEnd);
+                
+                container.appendChild(messageDiv);
+            });
         }
 
         function closeChatModal() {
@@ -2998,91 +3073,47 @@ body {
             document.getElementById('emojiPicker').style.display = 'none';
         }
 
-        function sendChatMessage() {
+        async function sendChatMessage() {
             const input = document.getElementById('chatMessageInput');
             const message = input.value.trim();
             
-            if (message) {
-                const container = document.getElementById('chatMessagesContainer');
-                const messageDiv = document.createElement('div');
-                messageDiv.className = 'chat-message-wrapper sent';
-                messageDiv.setAttribute('data-message-id', Date.now());
-                messageDiv.setAttribute('data-message-text', message);
-                messageDiv.setAttribute('data-sender', 'You');
-                
+            if (!message || !selectedChatUser || !currentUser) return;
+            
+            try {
+                const chatId = getChatId(currentUser.uid, selectedChatUser.id);
+                const messageId = Date.now().toString();
                 const time = new Date();
                 const timeString = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 
-                messageDiv.innerHTML = `
-                    <div class="chat-message-bubble">
-                        <div class="chat-message-text">${message}</div>
-                        <div class="chat-message-time">${timeString}</div>
-                    </div>
-                    <div class="reply-indicator reply-indicator-left">↩️ Reply</div>
-                    <div class="reply-indicator reply-indicator-right">↪️ Reply</div>
-                `;
+                const messageData = {
+                    id: messageId,
+                    text: message,
+                    senderId: currentUser.uid,
+                    senderName: currentUser.name,
+                    time: timeString,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                };
                 
-                // Add touch event listeners for swipe reply
-                messageDiv.addEventListener('touchstart', handleTouchStart, { passive: true });
-                messageDiv.addEventListener('touchmove', handleTouchMove, { passive: true });
-                messageDiv.addEventListener('touchend', handleTouchEnd);
+                await database.ref(`chats/${chatId}/messages/${messageId}`).set(messageData);
                 
-                const typingIndicator = document.querySelector('.chat-typing-indicator');
-                if (typingIndicator) {
-                    typingIndicator.remove();
-                }
+                // Update last message
+                await database.ref(`chats/${chatId}/lastMessage`).set({
+                    text: message,
+                    time: timeString,
+                    senderId: currentUser.uid
+                });
                 
-                // Remove typing indicator if it exists before the new message
-                const existingTyping = document.querySelector('.chat-typing-indicator');
-                if (existingTyping) existingTyping.remove();
-                
-                container.appendChild(messageDiv);
                 input.value = '';
                 document.getElementById('chatSendBtn').disabled = true;
-                container.scrollTop = container.scrollHeight;
                 
-                setTimeout(() => {
-                    simulateReply();
-                }, 2000);
+                // Call cloud function to simulate reply
+                const simulateReplyFunction = functions.httpsCallable('simulateReply');
+                simulateReplyFunction({ chatId, userId: selectedChatUser.id }).catch(console.error);
+                
+            } catch (error) {
+                console.error('Error sending message:', error);
+                showNotification('Error sending message');
             }
-        }
-
-        function simulateReply() {
-            const container = document.getElementById('chatMessagesContainer');
-            const replies = [
-                "That's awesome! 😊",
-                "I totally agree with you!",
-                "Tell me more about that",
-                "Haha yeah 😄",
-                "Interesting! What else?"
-            ];
-            
-            const randomReply = replies[Math.floor(Math.random() * replies.length)];
-            const time = new Date();
-            const timeString = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            
-            const replyDiv = document.createElement('div');
-            replyDiv.className = 'chat-message-wrapper received';
-            replyDiv.setAttribute('data-message-id', Date.now() + 1);
-            replyDiv.setAttribute('data-message-text', randomReply);
-            replyDiv.setAttribute('data-sender', selectedChatUser?.name || 'User');
-            replyDiv.innerHTML = `
-                <div class="chat-message-bubble">
-                    <div class="chat-message-sender">${selectedChatUser?.name || 'User'}</div>
-                    <div class="chat-message-text">${randomReply}</div>
-                    <div class="chat-message-time">${timeString}</div>
-                </div>
-                <div class="reply-indicator reply-indicator-left">↩️ Reply</div>
-                <div class="reply-indicator reply-indicator-right">↪️ Reply</div>
-            `;
-            
-            // Add touch event listeners for swipe reply
-            replyDiv.addEventListener('touchstart', handleTouchStart, { passive: true });
-            replyDiv.addEventListener('touchmove', handleTouchMove, { passive: true });
-            replyDiv.addEventListener('touchend', handleTouchEnd);
-            
-            container.appendChild(replyDiv);
-            container.scrollTop = container.scrollHeight;
         }
 
         // Swipe reply functions
@@ -3093,7 +3124,6 @@ body {
             touchCurrentX = touchStartX;
             currentSwipedElement = event.currentTarget;
             
-            // Remove swiped class from any other message
             document.querySelectorAll('.chat-message-wrapper.swiped-left, .chat-message-wrapper.swiped-right').forEach(el => {
                 el.classList.remove('swiped-left', 'swiped-right');
             });
@@ -3108,14 +3138,12 @@ body {
             const diffX = touchCurrentX - touchStartX;
             const diffY = Math.abs(touch.clientY - touchStartY);
             
-            // If vertical scroll is more significant, don't treat as swipe
             if (diffY > 20) {
                 return;
             }
             
-            // Limit swipe distance
             if (Math.abs(diffX) > 30) {
-                event.preventDefault(); // Prevent scrolling while swiping horizontally
+                event.preventDefault();
             }
         }
 
@@ -3126,16 +3154,13 @@ body {
             
             if (Math.abs(diffX) > SWIPE_THRESHOLD) {
                 if (diffX > 0) {
-                    // Swiped right
                     currentSwipedElement.classList.add('swiped-right');
                     replyToMessage(currentSwipedElement, 'right');
                 } else {
-                    // Swiped left
                     currentSwipedElement.classList.add('swiped-left');
                     replyToMessage(currentSwipedElement, 'left');
                 }
                 
-                // Remove swipe class after animation
                 setTimeout(() => {
                     if (currentSwipedElement) {
                         currentSwipedElement.classList.remove('swiped-left', 'swiped-right');
@@ -3153,7 +3178,6 @@ body {
             const messageText = messageElement.getAttribute('data-message-text') || 'message';
             const sender = messageElement.getAttribute('data-sender') || 'User';
             
-            // Set the input field with a reply placeholder
             const inputField = document.getElementById('chatMessageInput');
             inputField.value = `↪️ Replying to ${sender}: "${messageText.substring(0, 30)}${messageText.length > 30 ? '...' : ''}" `;
             inputField.focus();
@@ -3162,16 +3186,13 @@ body {
             showNotification(`Replying to ${sender}`);
         }
 
-        // Attach swipe listeners to existing messages when chat opens
         function attachSwipeListeners() {
             const messages = document.querySelectorAll('.chat-message-wrapper');
             messages.forEach(msg => {
-                // Remove existing listeners to avoid duplicates
                 msg.removeEventListener('touchstart', handleTouchStart);
                 msg.removeEventListener('touchmove', handleTouchMove);
                 msg.removeEventListener('touchend', handleTouchEnd);
                 
-                // Add fresh listeners
                 msg.addEventListener('touchstart', handleTouchStart, { passive: true });
                 msg.addEventListener('touchmove', handleTouchMove, { passive: true });
                 msg.addEventListener('touchend', handleTouchEnd);
@@ -3190,47 +3211,6 @@ body {
             const sendBtn = document.getElementById('chatSendBtn');
             
             sendBtn.disabled = !input.value.trim();
-            
-            if (input.value.length > 0 && !isTyping) {
-                isTyping = true;
-                
-                if (typingTimeout) {
-                    clearTimeout(typingTimeout);
-                }
-                
-                typingTimeout = setTimeout(() => {
-                    showTypingIndicator();
-                }, 1000);
-            } else if (input.value.length === 0) {
-                isTyping = false;
-                if (typingTimeout) {
-                    clearTimeout(typingTimeout);
-                }
-                removeTypingIndicator();
-            }
-        }
-
-        function showTypingIndicator() {
-            const container = document.getElementById('chatMessagesContainer');
-            
-            if (!document.querySelector('.chat-typing-indicator')) {
-                const typingDiv = document.createElement('div');
-                typingDiv.className = 'chat-typing-indicator';
-                typingDiv.innerHTML = `
-                    <div class="chat-typing-dot"></div>
-                    <div class="chat-typing-dot"></div>
-                    <div class="chat-typing-dot"></div>
-                `;
-                container.appendChild(typingDiv);
-                container.scrollTop = container.scrollHeight;
-            }
-        }
-
-        function removeTypingIndicator() {
-            const indicator = document.querySelector('.chat-typing-indicator');
-            if (indicator) {
-                indicator.remove();
-            }
         }
 
         function toggleEmojiPicker() {
@@ -3255,7 +3235,9 @@ body {
         }
 
         // Other functions
-        function openNotifications() {
+        async function openNotifications() {
+            const notifications = window.notifications || [];
+            
             const modal = document.createElement('div');
             modal.className = 'modal active';
             modal.innerHTML = `
@@ -3265,11 +3247,11 @@ body {
                         <div class="notifications-list">
                             ${notifications.map(n => `
                                 <div class="notification-item">
-                                    <div class="notification-icon">${n.icon}</div>
+                                    <div class="notification-icon">${n.icon || '🔔'}</div>
                                     <div class="notification-content">
-                                        <div class="notification-title">${n.title}</div>
-                                        <div class="notification-message">${n.message}</div>
-                                        <div class="notification-time">${n.time}</div>
+                                        <div class="notification-title">${n.title || 'Notification'}</div>
+                                        <div class="notification-message">${n.message || ''}</div>
+                                        <div class="notification-time">${n.time || 'Now'}</div>
                                     </div>
                                 </div>
                             `).join('')}
@@ -3287,18 +3269,38 @@ body {
             showNotification('Filters opened');
         }
 
-        function filterDiscover(filter, element) {
+        async function filterDiscover(filter, element) {
             const chips = document.querySelectorAll('.filter-chip');
             chips.forEach(chip => chip.classList.remove('active'));
             element.classList.add('active');
-            showNotification(`Filtering by: ${filter}`);
+            
+            try {
+                const filterFunction = functions.httpsCallable('filterDiscover');
+                const result = await filterFunction({ filter });
+                window.discoverProfiles = result.data;
+                renderDiscoverGrid();
+                showNotification(`Filtering by: ${filter}`);
+            } catch (error) {
+                console.error('Error filtering:', error);
+                showNotification('Error applying filter');
+            }
         }
 
-        function filterMatches(filter, element) {
+        async function filterMatches(filter, element) {
             const chips = document.querySelectorAll('.filter-chip');
             chips.forEach(chip => chip.classList.remove('active'));
             element.classList.add('active');
-            showNotification(`Filtering matches: ${filter}`);
+            
+            try {
+                const filterFunction = functions.httpsCallable('filterMatches');
+                const result = await filterFunction({ filter });
+                window.matches = result.data;
+                renderAllMatches();
+                showNotification(`Filtering matches: ${filter}`);
+            } catch (error) {
+                console.error('Error filtering matches:', error);
+                showNotification('Error applying filter');
+            }
         }
 
         function viewProfile(profile) {
@@ -3309,19 +3311,37 @@ body {
             showNotification('Add photo feature coming soon');
         }
 
-        function addInterest() {
+        async function addInterest() {
             const newInterest = prompt('Enter a new interest:');
-            if (newInterest && !currentUser.interests.includes(newInterest)) {
-                currentUser.interests.push(newInterest);
-                renderInterests();
-                showNotification('Interest added!');
+            if (newInterest && currentUser && !(currentUser.interests || []).includes(newInterest)) {
+                const updatedInterests = [...(currentUser.interests || []), newInterest];
+                
+                try {
+                    await database.ref(`users/${currentUser.uid}/interests`).set(updatedInterests);
+                    currentUser.interests = updatedInterests;
+                    renderInterests();
+                    showNotification('Interest added!');
+                } catch (error) {
+                    console.error('Error adding interest:', error);
+                    showNotification('Error adding interest');
+                }
             }
         }
 
-        function removeInterest(interest) {
-            currentUser.interests = currentUser.interests.filter(i => i !== interest);
-            renderInterests();
-            showNotification('Interest removed');
+        async function removeInterest(interest) {
+            if (!currentUser) return;
+            
+            const updatedInterests = (currentUser.interests || []).filter(i => i !== interest);
+            
+            try {
+                await database.ref(`users/${currentUser.uid}/interests`).set(updatedInterests);
+                currentUser.interests = updatedInterests;
+                renderInterests();
+                showNotification('Interest removed');
+            } catch (error) {
+                console.error('Error removing interest:', error);
+                showNotification('Error removing interest');
+            }
         }
 
         function openNotificationSettings() {
@@ -3336,6 +3356,7 @@ body {
 
         function openSubscriptionPage() {
             closeModal('settingsModal');
+            
             const modal = document.createElement('div');
             modal.className = 'modal active';
             modal.innerHTML = `
@@ -3351,7 +3372,7 @@ body {
                                     <li>✓ See who likes you</li>
                                     <li>✓ Passport to any location</li>
                                 </ul>
-                                <button class="subscribe-btn" onclick="showNotification('Subscribed to Basic'); this.closest('.modal').remove()">Subscribe</button>
+                                <button class="subscribe-btn" onclick="subscribe('basic'); this.closest('.modal').remove()">Subscribe</button>
                             </div>
                             
                             <div class="plan-card premium">
@@ -3364,7 +3385,7 @@ body {
                                     <li>✓ Incognito mode</li>
                                     <li>✓ Priority likes</li>
                                 </ul>
-                                <button class="subscribe-btn" onclick="showNotification('Subscribed to Premium'); this.closest('.modal').remove()">Subscribe</button>
+                                <button class="subscribe-btn" onclick="subscribe('premium'); this.closest('.modal').remove()">Subscribe</button>
                             </div>
                         </div>
                     </div>
@@ -3376,41 +3397,42 @@ body {
             document.body.appendChild(modal);
         }
 
+        async function subscribe(plan) {
+            try {
+                const subscribeFunction = functions.httpsCallable('subscribe');
+                await subscribeFunction({ plan });
+                showNotification(`Subscribed to ${plan} plan!`);
+            } catch (error) {
+                console.error('Error subscribing:', error);
+                showNotification('Error processing subscription');
+            }
+        }
+
         function openHelpPage() {
             closeModal('settingsModal');
             showNotification('Help & Support');
         }
 
-        function logout() {
+        async function logout() {
             closeModal('settingsModal');
-            showNotification('Logged out successfully');
             
-            // Clear auth state
-            localStorage.removeItem('isAuthenticated');
-            isAuthenticated = false;
-            
-            // Show auth page
-            setTimeout(() => {
-                showAuth();
-            }, 1500);
-        }
-
-        // Simulate real-time updates
-        setInterval(() => {
-            if (Math.random() > 0.7 && currentPage === 'home' && isAuthenticated) {
-                const newMessage = {
-                    id: Date.now(),
-                    name: 'New User',
-                    avatar: '👤',
-                    message: 'Just joined! Say hi 👋',
-                    time: 'just now',
-                    unread: true
-                };
-                messages.unshift(newMessage);
-                renderMessages();
-                showNotification('New message! 💬');
+            try {
+                await auth.signOut();
+                showNotification('Logged out successfully');
+                
+                // Clear local data
+                currentUser = null;
+                window.matches = [];
+                window.messages = [];
+                window.notifications = [];
+                window.swipeProfiles = [];
+                window.discoverProfiles = [];
+                
+            } catch (error) {
+                console.error('Error logging out:', error);
+                showNotification('Error logging out');
             }
-        }, 30000);
+        }
     </script>
 </body>
 </html>
