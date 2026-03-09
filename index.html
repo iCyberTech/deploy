@@ -79,7 +79,21 @@ body {
     justify-content: center;
     color: white;
     font-size: 24px;
-    flex-shrink: 0;
+    overflow: hidden;
+    position: relative;
+}
+
+.sidebar-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.sidebar-avatar span {
+    z-index: 1;
 }
 
 .sidebar-profile-info {
@@ -223,6 +237,21 @@ body {
     font-size: 40px;
     backdrop-filter: blur(5px);
     flex-shrink: 0;
+    overflow: hidden;
+    position: relative;
+}
+
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.profile-avatar span {
+    z-index: 1;
 }
 
 .profile-info {
@@ -297,12 +326,17 @@ body {
     width: 50%;
     height: 100%;
     background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+    position: relative;
+    overflow: hidden;
 }
 
 .card-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 .card-info {
@@ -423,6 +457,17 @@ body {
     margin-right: auto;
     box-shadow: 0 10px 20px rgba(255, 107, 107, 0.2);
     transition: transform 0.2s;
+    overflow: hidden;
+    position: relative;
+}
+
+.match-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 .match-item:hover .match-avatar {
@@ -470,6 +515,21 @@ body {
     color: white;
     font-size: 28px;
     flex-shrink: 0;
+    overflow: hidden;
+    position: relative;
+}
+
+.message-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.message-avatar span {
+    z-index: 1;
 }
 
 .message-details {
@@ -576,12 +636,17 @@ body {
 .discover-card-image {
     height: 200px;
     background: linear-gradient(135deg, #FF6B6B, #4ECDC4);
+    position: relative;
+    overflow: hidden;
 }
 
 .discover-card-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 .discover-card-info {
@@ -693,6 +758,21 @@ body {
     color: white;
     font-size: 24px;
     flex-shrink: 0;
+    overflow: hidden;
+    position: relative;
+}
+
+.chat-user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.chat-user-avatar span {
+    z-index: 1;
 }
 
 .chat-user-details {
@@ -1021,6 +1101,7 @@ body {
     padding: 20px;
     background: #f8f9fa;
     border-radius: 20px;
+    position: relative;
 }
 
 .profile-large-avatar {
@@ -1034,6 +1115,43 @@ body {
     color: white;
     font-size: 60px;
     flex-shrink: 0;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.profile-large-avatar:hover {
+    opacity: 0.9;
+}
+
+.profile-large-avatar:hover::after {
+    content: '📷';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    color: white;
+    border-radius: 50%;
+}
+
+.profile-large-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.profile-large-avatar span {
+    z-index: 1;
 }
 
 .profile-info-section {
@@ -1152,15 +1270,35 @@ body {
     font-size: 32px;
     cursor: pointer;
     transition: transform 0.2s;
+    overflow: hidden;
+    position: relative;
 }
 
 .photo-item:hover {
     transform: scale(1.05);
 }
 
+.photo-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
 .photo-item.add {
     background: #f8f9fa;
     color: #95a5a6;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+}
+
+.photo-item.add:hover {
+    background: #f0f2f4;
 }
 
 /* Settings Page */
@@ -1229,6 +1367,17 @@ body {
     justify-content: center;
     font-size: 24px;
     flex-shrink: 0;
+    overflow: hidden;
+    position: relative;
+}
+
+.notification-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 .notification-content {
@@ -1901,6 +2050,78 @@ body {
     font-weight: 600;
     cursor: pointer;
 }
+
+/* Avatar Upload Modal */
+.avatar-upload-modal .modal-content {
+    max-width: 450px;
+}
+
+.avatar-preview {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    margin: 20px auto;
+    overflow: hidden;
+    position: relative;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid linear-gradient(135deg, #FF6B6B, #4ECDC4);
+}
+
+.avatar-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-preview span {
+    font-size: 80px;
+    opacity: 0.5;
+}
+
+.upload-btn {
+    background: linear-gradient(135deg, #FF6B6B, #4ECDC4);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin: 10px 0;
+    display: inline-block;
+}
+
+.upload-btn:hover {
+    transform: scale(1.05);
+}
+
+.upload-progress {
+    width: 100%;
+    height: 4px;
+    background: #f0f2f4;
+    border-radius: 2px;
+    margin: 15px 0;
+    display: none;
+}
+
+.upload-progress.active {
+    display: block;
+}
+
+.upload-progress-bar {
+    height: 100%;
+    background: linear-gradient(135deg, #FF6B6B, #4ECDC4);
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.3s;
+}
+
+.file-input {
+    display: none;
+}
 </style>
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -1916,7 +2137,10 @@ body {
             <div class="sidebar-header">
                 <div class="sidebar-logo">8Teen</div>
                 <div class="sidebar-profile" onclick="switchToPage('profile')">
-                    <div class="sidebar-avatar" id="sidebarAvatar">😊</div>
+                    <div class="sidebar-avatar" id="sidebarAvatar">
+                        <span id="sidebarAvatarEmoji">😊</span>
+                        <img id="sidebarAvatarImg" src="" style="display: none;">
+                    </div>
                     <div class="sidebar-profile-info">
                         <h4 id="sidebarName">Loading...</h4>
                         <p id="sidebarStatus">Loading...</p>
@@ -2064,7 +2288,10 @@ body {
                 <div class="chat-header">
                     <span class="chat-back-btn" onclick="closeChatModal()">←</span>
                     <div class="chat-user-info">
-                        <div class="chat-user-avatar" id="chatAvatar">👤</div>
+                        <div class="chat-user-avatar" id="chatAvatar">
+                            <span id="chatAvatarEmoji">👤</span>
+                            <img id="chatAvatarImg" src="" style="display: none;">
+                        </div>
                         <div class="chat-user-details">
                             <div class="chat-user-name" id="chatUserName">Loading...</div>
                             <div class="chat-user-status" id="chatUserStatus">
@@ -2105,6 +2332,37 @@ body {
                     <span class="chat-attach-btn" onclick="attachImage()">📎</span>
                     <input type="text" class="chat-input-field" id="chatMessageInput" placeholder="Type a message..." onkeyup="checkTyping()" onkeypress="handleChatKeyPress(event)">
                     <button class="chat-send-btn" id="chatSendBtn" onclick="sendChatMessage()" disabled>➤</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Avatar Upload Modal -->
+        <div class="modal avatar-upload-modal" id="avatarUploadModal">
+            <div class="modal-content">
+                <h3>Update Profile Picture</h3>
+                <div class="modal-scroll-area" style="text-align: center;">
+                    <div class="avatar-preview" id="avatarPreview">
+                        <span id="avatarPreviewEmoji">😊</span>
+                        <img id="avatarPreviewImg" src="" style="display: none;">
+                    </div>
+                    
+                    <input type="file" id="avatarFileInput" class="file-input" accept="image/*" onchange="handleAvatarSelect(event)">
+                    
+                    <button class="upload-btn" onclick="document.getElementById('avatarFileInput').click()">
+                        Choose Photo
+                    </button>
+                    
+                    <div class="upload-progress" id="uploadProgress">
+                        <div class="upload-progress-bar" id="uploadProgressBar"></div>
+                    </div>
+                    
+                    <p style="color: #7f8c8d; font-size: 12px; margin-top: 10px;">
+                        Supported formats: JPG, PNG, GIF. Max size: 5MB
+                    </p>
+                </div>
+                <div class="modal-close-fixed">
+                    <button onclick="uploadAvatar()" id="uploadAvatarBtn" disabled>Upload</button>
+                    <button onclick="closeModal('avatarUploadModal')">Cancel</button>
                 </div>
             </div>
         </div>
@@ -2168,6 +2426,7 @@ body {
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
         const auth = firebase.auth();
+        const storage = firebase.storage();
         const functions = firebase.functions();
 
         // State Management - All data comes from Firebase, no hardcoded values
@@ -2178,6 +2437,7 @@ body {
         let typingTimeout;
         let isAuthenticated = false;
         let currentSwipeIndex = 0;
+        let selectedAvatarFile = null;
 
         // Data stores - all populated from Firebase
         let matchesData = {};
@@ -2241,6 +2501,7 @@ body {
                         gender: '',
                         interestedIn: 'everyone',
                         avatar: '😊',
+                        avatarUrl: null,
                         photos: {},
                         interests: {},
                         matches: 0,
@@ -2339,6 +2600,7 @@ body {
                 if (snapshot.exists()) {
                     currentUser = snapshot.val();
                     updateSidebarProfile();
+                    updateAllAvatars();
                     if (currentPage === 'profile') {
                         loadPage('profile');
                     } else if (currentPage === 'home') {
@@ -2382,6 +2644,57 @@ body {
                     renderDiscoverGrid();
                 }
             });
+        }
+
+        // Update all avatar displays throughout the app
+        function updateAllAvatars() {
+            if (!currentUser) return;
+            
+            // Update sidebar avatar
+            const sidebarAvatarImg = document.getElementById('sidebarAvatarImg');
+            const sidebarAvatarEmoji = document.getElementById('sidebarAvatarEmoji');
+            
+            if (currentUser.avatarUrl) {
+                sidebarAvatarImg.src = currentUser.avatarUrl;
+                sidebarAvatarImg.style.display = 'block';
+                sidebarAvatarEmoji.style.display = 'none';
+            } else {
+                sidebarAvatarEmoji.textContent = currentUser.avatar || '😊';
+                sidebarAvatarEmoji.style.display = 'block';
+                sidebarAvatarImg.style.display = 'none';
+            }
+            
+            // Update profile avatar in home/profile pages if they're loaded
+            const profileAvatarImg = document.getElementById('profileAvatarImg');
+            const profileAvatarEmoji = document.getElementById('profileAvatarEmoji');
+            
+            if (profileAvatarImg && profileAvatarEmoji) {
+                if (currentUser.avatarUrl) {
+                    profileAvatarImg.src = currentUser.avatarUrl;
+                    profileAvatarImg.style.display = 'block';
+                    profileAvatarEmoji.style.display = 'none';
+                } else {
+                    profileAvatarEmoji.textContent = currentUser.avatar || '😊';
+                    profileAvatarEmoji.style.display = 'block';
+                    profileAvatarImg.style.display = 'none';
+                }
+            }
+            
+            // Update large profile avatar
+            const profileLargeAvatarImg = document.getElementById('profileLargeAvatarImg');
+            const profileLargeAvatarEmoji = document.getElementById('profileLargeAvatarEmoji');
+            
+            if (profileLargeAvatarImg && profileLargeAvatarEmoji) {
+                if (currentUser.avatarUrl) {
+                    profileLargeAvatarImg.src = currentUser.avatarUrl;
+                    profileLargeAvatarImg.style.display = 'block';
+                    profileLargeAvatarEmoji.style.display = 'none';
+                } else {
+                    profileLargeAvatarEmoji.textContent = currentUser.avatar || '😊';
+                    profileLargeAvatarEmoji.style.display = 'block';
+                    profileLargeAvatarImg.style.display = 'none';
+                }
+            }
         }
 
         function clearAllData() {
@@ -2479,6 +2792,7 @@ body {
                     gender: '',
                     interestedIn: 'everyone',
                     avatar: '😊',
+                    avatarUrl: null,
                     photos: {},
                     interests: {},
                     matches: 0,
@@ -2556,6 +2870,7 @@ body {
                 renderMatches();
                 renderMessages();
                 updateSwipeCard();
+                updateAllAvatars();
                 
                 if (window.innerWidth <= 768) {
                     const pageTitle = document.querySelector('.page-title');
@@ -2579,6 +2894,7 @@ body {
             } else if (page === 'profile') {
                 renderInterests();
                 renderPhotos();
+                updateAllAvatars();
             }
         }
 
@@ -2606,7 +2922,19 @@ body {
             if (!currentUser) return;
             document.getElementById('sidebarName').textContent = currentUser.name || 'User';
             document.getElementById('sidebarStatus').textContent = currentUser.lastActive ? 'Online' : 'Offline';
-            document.getElementById('sidebarAvatar').textContent = currentUser.avatar || '😊';
+            
+            const sidebarAvatarImg = document.getElementById('sidebarAvatarImg');
+            const sidebarAvatarEmoji = document.getElementById('sidebarAvatarEmoji');
+            
+            if (currentUser.avatarUrl) {
+                sidebarAvatarImg.src = currentUser.avatarUrl;
+                sidebarAvatarImg.style.display = 'block';
+                sidebarAvatarEmoji.style.display = 'none';
+            } else {
+                sidebarAvatarEmoji.textContent = currentUser.avatar || '😊';
+                sidebarAvatarEmoji.style.display = 'block';
+                sidebarAvatarImg.style.display = 'none';
+            }
         }
 
         function switchToPage(page, element) {
@@ -2641,7 +2969,10 @@ body {
 
                 <div class="profile-card" id="profileCard">
                     <div class="profile-header">
-                        <div class="profile-avatar" id="profileAvatar">${currentUser?.avatar || '😊'}</div>
+                        <div class="profile-avatar" id="profileAvatar">
+                            <span id="profileAvatarEmoji">${currentUser?.avatar || '😊'}</span>
+                            <img id="profileAvatarImg" src="${currentUser?.avatarUrl || ''}" style="${currentUser?.avatarUrl ? 'display: block;' : 'display: none;'}">
+                        </div>
                         <div class="profile-info">
                             <h2 id="profileName">${currentUser?.name || 'User'}</h2>
                             <p id="profileBio">${currentUser?.age ? currentUser.age + ' • ' : ''}${currentUser?.bio || 'Complete your profile'}</p>
@@ -2665,7 +2996,7 @@ body {
 
                 <div class="swipe-container" id="swipeContainer">
                     <div class="swipe-card" id="currentSwipeCard">
-                        <div class="card-image">
+                        <div class="card-image" id="swipeCardImage">
                             <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23FF6B6B'/%3E%3Ctext x='25' y='55' font-family='Arial' font-size='14' fill='white'%3EProfile%3C/text%3E%3C/svg%3E" alt="Profile">
                         </div>
                         <div class="card-info">
@@ -2726,7 +3057,7 @@ body {
 
                 <div class="swipe-container" style="height: 500px;">
                     <div class="swipe-card" id="swipeCard">
-                        <div class="card-image">
+                        <div class="card-image" id="swipeCardImage">
                             <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23FF6B6B'/%3E%3Ctext x='25' y='55' font-family='Arial' font-size='14' fill='white'%3EProfile%3C/text%3E%3C/svg%3E" alt="Profile">
                         </div>
                         <div class="card-info">
@@ -2783,7 +3114,10 @@ body {
                 </div>
 
                 <div class="profile-header-section">
-                    <div class="profile-large-avatar">${currentUser?.avatar || '😊'}</div>
+                    <div class="profile-large-avatar" onclick="openAvatarUploadModal()">
+                        <span id="profileLargeAvatarEmoji">${currentUser?.avatar || '😊'}</span>
+                        <img id="profileLargeAvatarImg" src="${currentUser?.avatarUrl || ''}" style="${currentUser?.avatarUrl ? 'display: block;' : 'display: none;'}">
+                    </div>
                     <div class="profile-info-section">
                         <h2>${currentUser?.name || 'User'}${currentUser?.age ? ', ' + currentUser.age : ''}</h2>
                         <p>${currentUser?.location || 'Add your location'}</p>
@@ -2821,7 +3155,7 @@ body {
             const photoArray = Object.values(photos);
             
             photoArray.forEach(photo => {
-                html += `<div class="photo-item" onclick="viewPhoto('${photo}')">📸</div>`;
+                html += `<div class="photo-item" onclick="viewPhoto('${photo}')"><img src="${photo}"></div>`;
             });
             
             // Add empty slots up to 6 photos
@@ -2851,8 +3185,15 @@ body {
                 const matchItem = document.createElement('div');
                 matchItem.className = 'message-item';
                 matchItem.onclick = () => openChat({ id: matchId, ...user });
+                
+                const avatarHtml = user.avatarUrl ? 
+                    `<img src="${user.avatarUrl}" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;">` :
+                    `<span style="z-index: 1;">${user.avatar || '👤'}</span>`;
+                
                 matchItem.innerHTML = `
-                    <div class="message-avatar">${user.avatar || '👤'}</div>
+                    <div class="message-avatar">
+                        ${avatarHtml}
+                    </div>
                     <div class="message-details">
                         <div class="message-header">
                             <span class="message-name">${user.name || 'User'}${user.age ? ', ' + user.age : ''}</span>
@@ -2885,9 +3226,14 @@ body {
                 const card = document.createElement('div');
                 card.className = 'discover-card';
                 card.onclick = () => viewProfile(profile);
+                
+                const imageHtml = profile.avatarUrl ? 
+                    `<img src="${profile.avatarUrl}" style="width: 100%; height: 100%; object-fit: cover;">` :
+                    `<div style="width: 100%; height: 100%; background: linear-gradient(135deg, #FF6B6B, #4ECDC4); display: flex; align-items: center; justify-content: center; color: white; font-size: 40px;">${profile.avatar || '👤'}</div>`;
+                
                 card.innerHTML = `
                     <div class="discover-card-image">
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23FF6B6B'/%3E%3Ctext x='25' y='55' font-family='Arial' font-size='14' fill='white'%3E${profile.name || 'User'}%3C/text%3E%3C/svg%3E" style="width: 100%; height: 100%; object-fit: cover;">
+                        ${imageHtml}
                     </div>
                     <div class="discover-card-info">
                         <div class="discover-card-name">${profile.name || 'User'}${profile.age ? ', ' + profile.age : ''}</div>
@@ -2947,14 +3293,14 @@ body {
             const matchEl = document.getElementById('matchCount');
             const likeEl = document.getElementById('likeCount');
             const viewEl = document.getElementById('viewCount');
-            const avatarEl = document.getElementById('profileAvatar');
             
             if (nameEl) nameEl.textContent = currentUser.name || 'User';
             if (bioEl) bioEl.textContent = (currentUser.age ? currentUser.age + ' • ' : '') + (currentUser.bio || 'Complete your profile');
             if (matchEl) matchEl.textContent = Object.keys(matchesData).length || 0;
             if (likeEl) likeEl.textContent = currentUser.likes || 0;
             if (viewEl) viewEl.textContent = currentUser.views || 0;
-            if (avatarEl) avatarEl.textContent = currentUser.avatar || '😊';
+            
+            updateAllAvatars();
         }
 
         function renderMatches() {
@@ -2976,8 +3322,15 @@ body {
                 const matchItem = document.createElement('div');
                 matchItem.className = 'match-item';
                 matchItem.onclick = () => openChat({ id: matchId, ...user });
+                
+                const avatarHtml = user.avatarUrl ? 
+                    `<img src="${user.avatarUrl}" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;">` :
+                    `<span style="z-index: 1;">${user.avatar || '👤'}</span>`;
+                
                 matchItem.innerHTML = `
-                    <div class="match-avatar">${user.avatar || '👤'}</div>
+                    <div class="match-avatar">
+                        ${avatarHtml}
+                    </div>
                     <div class="match-name">${user.name || 'User'}${user.age ? ', ' + user.age : ''}</div>
                 `;
                 matchesGrid.appendChild(matchItem);
@@ -3003,8 +3356,15 @@ body {
                 const messageItem = document.createElement('div');
                 messageItem.className = 'message-item';
                 messageItem.onclick = () => openChat({ id: msg.senderId, ...user });
+                
+                const avatarHtml = user.avatarUrl ? 
+                    `<img src="${user.avatarUrl}" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;">` :
+                    `<span style="z-index: 1;">${user.avatar || '👤'}</span>`;
+                
                 messageItem.innerHTML = `
-                    <div class="message-avatar">${user.avatar || '👤'}</div>
+                    <div class="message-avatar">
+                        ${avatarHtml}
+                    </div>
                     <div class="message-details">
                         <div class="message-header">
                             <span class="message-name">${user.name || 'User'}</span>
@@ -3047,9 +3407,15 @@ body {
             const locationEl = document.getElementById('swipeLocation') || document.getElementById('swipeProfileLocation');
             const badgesEl = document.getElementById('swipeBadges') || document.getElementById('swipeProfileBadges');
             const countEl = document.getElementById('swipeCount');
+            const cardImage = document.getElementById('swipeCardImage')?.querySelector('img');
             
             if (nameEl) nameEl.textContent = `${profile.name || 'User'}${profile.age ? ', ' + profile.age : ''}`;
             if (locationEl) locationEl.textContent = `📍 ${profile.location || 'Nearby'}`;
+            
+            // Update card image if available
+            if (cardImage && profile.avatarUrl) {
+                cardImage.src = profile.avatarUrl;
+            }
             
             if (badgesEl) {
                 badgesEl.innerHTML = '';
@@ -3193,6 +3559,27 @@ body {
 
         function closeModal(modalId) {
             document.getElementById(modalId).classList.remove('active');
+            
+            // Reset avatar upload modal state if closing
+            if (modalId === 'avatarUploadModal') {
+                selectedAvatarFile = null;
+                document.getElementById('uploadAvatarBtn').disabled = true;
+                document.getElementById('uploadProgress').classList.remove('active');
+                document.getElementById('uploadProgressBar').style.width = '0%';
+                
+                // Reset preview
+                const previewEmoji = document.getElementById('avatarPreviewEmoji');
+                const previewImg = document.getElementById('avatarPreviewImg');
+                if (currentUser.avatarUrl) {
+                    previewImg.src = currentUser.avatarUrl;
+                    previewImg.style.display = 'block';
+                    previewEmoji.style.display = 'none';
+                } else {
+                    previewEmoji.textContent = currentUser.avatar || '😊';
+                    previewEmoji.style.display = 'block';
+                    previewImg.style.display = 'none';
+                }
+            }
         }
 
         async function saveProfile() {
@@ -3228,11 +3615,139 @@ body {
             }
         }
 
+        // Avatar upload functions
+        function openAvatarUploadModal() {
+            if (!currentUser) return;
+            
+            // Reset preview
+            const previewEmoji = document.getElementById('avatarPreviewEmoji');
+            const previewImg = document.getElementById('avatarPreviewImg');
+            
+            if (currentUser.avatarUrl) {
+                previewImg.src = currentUser.avatarUrl;
+                previewImg.style.display = 'block';
+                previewEmoji.style.display = 'none';
+            } else {
+                previewEmoji.textContent = currentUser.avatar || '😊';
+                previewEmoji.style.display = 'block';
+                previewImg.style.display = 'none';
+            }
+            
+            document.getElementById('avatarUploadModal').classList.add('active');
+        }
+
+        function handleAvatarSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // Check file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                showNotification('File too large. Maximum size is 5MB.');
+                return;
+            }
+            
+            // Check file type
+            if (!file.type.startsWith('image/')) {
+                showNotification('Please select an image file.');
+                return;
+            }
+            
+            selectedAvatarFile = file;
+            
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const previewEmoji = document.getElementById('avatarPreviewEmoji');
+                const previewImg = document.getElementById('avatarPreviewImg');
+                
+                previewImg.src = e.target.result;
+                previewImg.style.display = 'block';
+                previewEmoji.style.display = 'none';
+                
+                // Enable upload button
+                document.getElementById('uploadAvatarBtn').disabled = false;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function uploadAvatar() {
+            if (!selectedAvatarFile || !currentUser) return;
+            
+            const uploadBtn = document.getElementById('uploadAvatarBtn');
+            const progressBar = document.getElementById('uploadProgressBar');
+            const progressContainer = document.getElementById('uploadProgress');
+            
+            uploadBtn.disabled = true;
+            progressContainer.classList.add('active');
+            
+            try {
+                // Create storage reference
+                const storageRef = storage.ref();
+                const avatarRef = storageRef.child(`avatars/${currentUser.uid}/${Date.now()}_${selectedAvatarFile.name}`);
+                
+                // Upload file with progress
+                const uploadTask = avatarRef.put(selectedAvatarFile);
+                
+                uploadTask.on('state_changed', 
+                    (snapshot) => {
+                        // Progress
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        progressBar.style.width = progress + '%';
+                    },
+                    (error) => {
+                        // Error
+                        console.error('Upload error:', error);
+                        showNotification('Error uploading avatar');
+                        uploadBtn.disabled = false;
+                    },
+                    async () => {
+                        // Complete
+                        const downloadUrl = await uploadTask.snapshot.ref.getDownloadURL();
+                        
+                        // Update user profile with avatar URL
+                        await database.ref(`users/${currentUser.uid}`).update({
+                            avatarUrl: downloadUrl,
+                            lastActive: firebase.database.ServerValue.TIMESTAMP
+                        });
+                        
+                        // Update local user
+                        currentUser.avatarUrl = downloadUrl;
+                        
+                        // Update all avatar displays
+                        updateAllAvatars();
+                        
+                        showNotification('Avatar updated successfully!');
+                        
+                        // Close modal
+                        setTimeout(() => {
+                            closeModal('avatarUploadModal');
+                        }, 500);
+                    }
+                );
+            } catch (error) {
+                console.error('Error uploading avatar:', error);
+                showNotification('Error uploading avatar');
+                uploadBtn.disabled = false;
+            }
+        }
+
         // Chat functions
         async function openChat(user) {
             selectedChatUser = user;
             document.getElementById('chatUserName').textContent = user.name || 'User';
-            document.getElementById('chatAvatar').textContent = user.avatar || '👤';
+            
+            const chatAvatarEmoji = document.getElementById('chatAvatarEmoji');
+            const chatAvatarImg = document.getElementById('chatAvatarImg');
+            
+            if (user.avatarUrl) {
+                chatAvatarImg.src = user.avatarUrl;
+                chatAvatarImg.style.display = 'block';
+                chatAvatarEmoji.style.display = 'none';
+            } else {
+                chatAvatarEmoji.textContent = user.avatar || '👤';
+                chatAvatarEmoji.style.display = 'block';
+                chatAvatarImg.style.display = 'none';
+            }
             
             const statusEl = document.getElementById('chatUserStatus');
             const lastActive = user.lastActive ? new Date(user.lastActive) : new Date();
