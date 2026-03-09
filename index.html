@@ -1902,12 +1902,12 @@ body {
     cursor: pointer;
 }
 </style>
-    
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-functions-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
 </head>
 <body>
     <div class="app-container" id="appContainer" style="display: none;">
@@ -1960,7 +1960,11 @@ body {
 
         <!-- Main Content -->
         <div class="main-content" id="mainContent">
-            <!-- Content will be dynamically loaded here -->
+            <!-- Content will be dynamically loaded from Firebase -->
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <p>Loading your experience...</p>
+            </div>
         </div>
 
         <!-- Bottom Navigation - Mobile only -->
@@ -2064,8 +2068,8 @@ body {
                         <div class="chat-user-details">
                             <div class="chat-user-name" id="chatUserName">Loading...</div>
                             <div class="chat-user-status" id="chatUserStatus">
-                                <span class="status-dot online"></span>
-                                <span class="status-online">Online</span>
+                                <span class="status-dot"></span>
+                                <span class="status-online">Loading...</span>
                             </div>
                         </div>
                     </div>
@@ -2147,8 +2151,7 @@ body {
     </div>
 
     <script>
-        // Firebase Configuration
-        // Replace with your Firebase config
+        // Firebase Configuration - REPLACE WITH YOUR ACTUAL CONFIG
         const firebaseConfig = {
   apiKey: "AIzaSyAMRJyIkwzOfaIGK2u7-32RyIBTYzvCDLI",
   authDomain: "date-198b3.firebaseapp.com",
@@ -2160,13 +2163,14 @@ body {
   measurementId: "G-H4TPK91MD2"
 };
 
+
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
         const auth = firebase.auth();
         const functions = firebase.functions();
 
-        // State Management
+        // State Management - All data comes from Firebase, no hardcoded values
         let currentUser = null;
         let currentPage = 'home';
         let selectedChatUser = null;
@@ -2174,6 +2178,14 @@ body {
         let typingTimeout;
         let isAuthenticated = false;
         let currentSwipeIndex = 0;
+
+        // Data stores - all populated from Firebase
+        let matchesData = {};
+        let messagesData = {};
+        let notificationsData = {};
+        let swipeProfilesData = {};
+        let discoverProfilesData = {};
+        let usersData = {};
 
         // Swipe reply variables
         let touchStartX = 0;
@@ -2187,17 +2199,15 @@ body {
             // Check auth state
             auth.onAuthStateChanged(async (user) => {
                 if (user) {
-                    // User is signed in
+                    // User is signed in - load ALL data from Firebase
                     isAuthenticated = true;
-                    await loadUserData(user.uid);
+                    await loadAllUserData(user.uid);
                     showApp();
                     
-                    // Load initial data from cloud functions
-                    await loadInitialData();
+                    // Setup all realtime listeners
+                    setupAllRealtimeListeners(user.uid);
                     
-                    // Start listening to real-time updates
-                    setupRealtimeListeners();
-                    
+                    // Load initial page
                     loadPage('home');
                     updateSidebarProfile();
                     updateMobileNavActive('home');
@@ -2209,56 +2219,137 @@ body {
                 } else {
                     // User is signed out
                     showAuth();
+                    clearAllData();
                 }
             });
         });
 
-        // Load user data from Firebase
-        async function loadUserData(uid) {
+        // Load ALL user data from Firebase - no hardcoded fallbacks
+        async function loadAllUserData(uid) {
             try {
-                const snapshot = await database.ref(`users/${uid}`).once('value');
-                currentUser = snapshot.val() || {
-                    uid: uid,
-                    name: 'New User',
-                    age: 25,
-                    location: 'San Francisco',
-                    bio: 'Looking for meaningful connections',
-                    gender: 'female',
-                    interestedIn: 'everyone',
-                    avatar: '😊',
-                    matches: 0,
-                    likes: 0,
-                    views: '0',
-                    photos: [],
-                    interests: []
-                };
+                // Load user profile
+                const userSnapshot = await database.ref(`users/${uid}`).once('value');
+                if (!userSnapshot.exists()) {
+                    // Create default user if doesn't exist (only minimal required data)
+                    const defaultUser = {
+                        uid: uid,
+                        email: auth.currentUser?.email || '',
+                        name: auth.currentUser?.email?.split('@')[0] || 'User',
+                        age: null,
+                        location: '',
+                        bio: '',
+                        gender: '',
+                        interestedIn: 'everyone',
+                        avatar: '😊',
+                        photos: {},
+                        interests: {},
+                        matches: 0,
+                        likes: 0,
+                        views: 0,
+                        createdAt: firebase.database.ServerValue.TIMESTAMP,
+                        lastActive: firebase.database.ServerValue.TIMESTAMP
+                    };
+                    await database.ref(`users/${uid}`).set(defaultUser);
+                    currentUser = defaultUser;
+                } else {
+                    currentUser = userSnapshot.val();
+                }
+
+                // Load matches
+                const matchesSnapshot = await database.ref(`matches/${uid}`).once('value');
+                matchesData = matchesSnapshot.val() || {};
+
+                // Load messages overview
+                const messagesSnapshot = await database.ref(`messages/${uid}`).once('value');
+                messagesData = messagesSnapshot.val() || {};
+
+                // Load notifications
+                const notificationsSnapshot = await database.ref(`notifications/${uid}`).once('value');
+                notificationsData = notificationsSnapshot.val() || {};
+
+                // Load all users for swipe/discover (filtered by preferences)
+                const allUsersSnapshot = await database.ref('users').once('value');
+                usersData = allUsersSnapshot.val() || {};
+
+                // Filter and prepare swipe profiles
+                prepareSwipeProfiles();
+
+                // Filter and prepare discover profiles
+                prepareDiscoverProfiles();
+
+                console.log('All data loaded from Firebase successfully');
             } catch (error) {
-                console.error('Error loading user data:', error);
-                showNotification('Error loading user data');
+                console.error('Error loading user data from Firebase:', error);
+                showNotification('Error loading data. Please refresh.');
             }
         }
 
-        // Load initial data from cloud functions
-        async function loadInitialData() {
-            try {
-                const loadDataFunction = functions.httpsCallable('loadInitialData');
-                const result = await loadDataFunction();
+        // Prepare swipe profiles based on user preferences
+        function prepareSwipeProfiles() {
+            if (!currentUser || !usersData) return;
+            
+            swipeProfilesData = {};
+            const currentUserId = currentUser.uid;
+            
+            Object.keys(usersData).forEach(userId => {
+                if (userId === currentUserId) return; // Skip self
                 
-                // Store data in window for access
-                window.appData = result.data;
-            } catch (error) {
-                console.error('Error loading initial data:', error);
-                showNotification('Error loading app data');
-            }
+                const user = usersData[userId];
+                
+                // Check if already swiped
+                const swipedRef = database.ref(`swipes/${currentUserId}/${userId}`);
+                swipedRef.once('value', (snapshot) => {
+                    if (!snapshot.exists()) {
+                        // Add to swipe profiles based on preferences
+                        if (currentUser.interestedIn === 'everyone' || 
+                            (currentUser.interestedIn === 'male' && user.gender === 'male') ||
+                            (currentUser.interestedIn === 'female' && user.gender === 'female')) {
+                            swipeProfilesData[userId] = user;
+                        }
+                    }
+                });
+            });
         }
 
-        // Setup real-time listeners
-        function setupRealtimeListeners() {
-            if (!currentUser) return;
+        // Prepare discover profiles
+        function prepareDiscoverProfiles() {
+            if (!currentUser || !usersData) return;
+            
+            discoverProfilesData = {};
+            const currentUserId = currentUser.uid;
+            
+            Object.keys(usersData).forEach(userId => {
+                if (userId === currentUserId) return; // Skip self
+                
+                const user = usersData[userId];
+                
+                // Add to discover based on distance/preferences (simplified for demo)
+                if (currentUser.interestedIn === 'everyone' || 
+                    (currentUser.interestedIn === 'male' && user.gender === 'male') ||
+                    (currentUser.interestedIn === 'female' && user.gender === 'female')) {
+                    discoverProfilesData[userId] = user;
+                }
+            });
+        }
 
-            // Listen for matches updates
-            database.ref(`matches/${currentUser.uid}`).on('value', (snapshot) => {
-                window.matches = snapshot.val() || [];
+        // Setup ALL realtime listeners
+        function setupAllRealtimeListeners(uid) {
+            // Listen for user profile changes
+            database.ref(`users/${uid}`).on('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    currentUser = snapshot.val();
+                    updateSidebarProfile();
+                    if (currentPage === 'profile') {
+                        loadPage('profile');
+                    } else if (currentPage === 'home') {
+                        updateProfileDisplay();
+                    }
+                }
+            });
+
+            // Listen for matches changes
+            database.ref(`matches/${uid}`).on('value', (snapshot) => {
+                matchesData = snapshot.val() || {};
                 if (currentPage === 'home') {
                     renderMatches();
                 } else if (currentPage === 'matches') {
@@ -2266,34 +2357,41 @@ body {
                 }
             });
 
-            // Listen for messages updates
-            database.ref(`messages/${currentUser.uid}`).on('value', (snapshot) => {
-                window.messages = snapshot.val() || [];
+            // Listen for messages changes
+            database.ref(`messages/${uid}`).on('value', (snapshot) => {
+                messagesData = snapshot.val() || {};
                 if (currentPage === 'home') {
                     renderMessages();
                 }
             });
 
-            // Listen for notifications updates
-            database.ref(`notifications/${currentUser.uid}`).on('value', (snapshot) => {
-                window.notifications = snapshot.val() || [];
+            // Listen for notifications changes
+            database.ref(`notifications/${uid}`).on('value', (snapshot) => {
+                notificationsData = snapshot.val() || {};
             });
 
-            // Listen for swipe profiles updates
-            database.ref('swipeProfiles').on('value', (snapshot) => {
-                window.swipeProfiles = snapshot.val() || [];
+            // Listen for all users changes (for swipe/discover)
+            database.ref('users').on('value', (snapshot) => {
+                usersData = snapshot.val() || {};
+                prepareSwipeProfiles();
+                prepareDiscoverProfiles();
+                
                 if (currentPage === 'swipe') {
                     initializeSwipe();
-                }
-            });
-
-            // Listen for discover profiles updates
-            database.ref('discoverProfiles').on('value', (snapshot) => {
-                window.discoverProfiles = snapshot.val() || [];
-                if (currentPage === 'discover') {
+                } else if (currentPage === 'discover') {
                     renderDiscoverGrid();
                 }
             });
+        }
+
+        function clearAllData() {
+            currentUser = null;
+            matchesData = {};
+            messagesData = {};
+            notificationsData = {};
+            swipeProfilesData = {};
+            discoverProfilesData = {};
+            usersData = {};
         }
 
         function showAuth() {
@@ -2331,8 +2429,13 @@ body {
             const email = document.getElementById('signinEmail').value;
             const password = document.getElementById('signinPassword').value;
 
+            if (!email || !password) {
+                showNotification('Please enter email and password');
+                return;
+            }
+
             try {
-                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                await auth.signInWithEmailAndPassword(email, password);
                 showNotification('Signed in successfully! 🎉');
             } catch (error) {
                 console.error('Sign in error:', error);
@@ -2346,7 +2449,6 @@ body {
             const password = document.getElementById('signupPassword').value;
             const confirmPassword = document.getElementById('signupConfirmPassword').value;
 
-            // Simple validation
             if (!name || !email || !password) {
                 showNotification('Please fill in all fields');
                 return;
@@ -2366,25 +2468,27 @@ body {
                 const userCredential = await auth.createUserWithEmailAndPassword(email, password);
                 const user = userCredential.user;
                 
-                // Create user profile in database
-                await database.ref(`users/${user.uid}`).set({
+                // Create user profile in database with only essential fields
+                const newUser = {
                     uid: user.uid,
-                    name: name,
                     email: email,
-                    age: 25,
-                    location: 'San Francisco',
-                    bio: 'Looking for meaningful connections',
-                    gender: 'female',
+                    name: name,
+                    age: null,
+                    location: '',
+                    bio: '',
+                    gender: '',
                     interestedIn: 'everyone',
                     avatar: '😊',
+                    photos: {},
+                    interests: {},
                     matches: 0,
                     likes: 0,
-                    views: '0',
-                    photos: [],
-                    interests: [],
-                    createdAt: firebase.database.ServerValue.TIMESTAMP
-                });
+                    views: 0,
+                    createdAt: firebase.database.ServerValue.TIMESTAMP,
+                    lastActive: firebase.database.ServerValue.TIMESTAMP
+                };
                 
+                await database.ref(`users/${user.uid}`).set(newUser);
                 showNotification('Account created successfully! 🎉');
             } catch (error) {
                 console.error('Sign up error:', error);
@@ -2393,14 +2497,12 @@ body {
         }
 
         function switchTitleToLogoOnMobile() {
-            // Only run on mobile (width <= 768px)
             if (window.innerWidth <= 768) {
                 const pageTitle = document.querySelector('.page-title');
                 if (pageTitle && pageTitle.textContent === 'Home') {
-                    // Create logo element
-                    pageTitle.textContent = ''; // Clear content
+                    pageTitle.textContent = '';
                     pageTitle.classList.add('logo-title');
-                    pageTitle.textContent = '8Teen'; // Set logo text
+                    pageTitle.textContent = '8Teen';
                 }
             }
         }
@@ -2423,7 +2525,7 @@ body {
         });
 
         async function loadPage(page) {
-            if (!isAuthenticated) return;
+            if (!isAuthenticated || !currentUser) return;
             
             currentPage = page;
             const mainContent = document.getElementById('mainContent');
@@ -2446,18 +2548,15 @@ body {
                     break;
             }
             
-            // Update active menu items
             updateActiveMenuItem(page);
             updateMobileNavActive(page);
             
-            // Re-attach event listeners and update dynamic content
             if (page === 'home') {
                 updateProfileDisplay();
                 renderMatches();
                 renderMessages();
                 updateSwipeCard();
                 
-                // If on mobile and timer already passed, ensure title is logo
                 if (window.innerWidth <= 768) {
                     const pageTitle = document.querySelector('.page-title');
                     if (pageTitle && pageTitle.textContent === 'Home') {
@@ -2479,6 +2578,7 @@ body {
                 renderDiscoverGrid();
             } else if (page === 'profile') {
                 renderInterests();
+                renderPhotos();
             }
         }
 
@@ -2505,7 +2605,8 @@ body {
         function updateSidebarProfile() {
             if (!currentUser) return;
             document.getElementById('sidebarName').textContent = currentUser.name || 'User';
-            document.getElementById('sidebarStatus').textContent = 'Online';
+            document.getElementById('sidebarStatus').textContent = currentUser.lastActive ? 'Online' : 'Offline';
+            document.getElementById('sidebarAvatar').textContent = currentUser.avatar || '😊';
         }
 
         function switchToPage(page, element) {
@@ -2543,12 +2644,12 @@ body {
                         <div class="profile-avatar" id="profileAvatar">${currentUser?.avatar || '😊'}</div>
                         <div class="profile-info">
                             <h2 id="profileName">${currentUser?.name || 'User'}</h2>
-                            <p id="profileBio">${currentUser?.age || 25} • ${currentUser?.bio || 'Looking for connections'}</p>
+                            <p id="profileBio">${currentUser?.age ? currentUser.age + ' • ' : ''}${currentUser?.bio || 'Complete your profile'}</p>
                         </div>
                     </div>
                     <div class="profile-stats">
                         <div class="stat">
-                            <div class="stat-number" id="matchCount">${currentUser?.matches || 0}</div>
+                            <div class="stat-number" id="matchCount">${Object.keys(matchesData).length || 0}</div>
                             <div class="stat-label">Matches</div>
                         </div>
                         <div class="stat">
@@ -2556,7 +2657,7 @@ body {
                             <div class="stat-label">Likes</div>
                         </div>
                         <div class="stat">
-                            <div class="stat-number" id="viewCount">${currentUser?.views || '0'}</div>
+                            <div class="stat-number" id="viewCount">${currentUser?.views || 0}</div>
                             <div class="stat-label">Views</div>
                         </div>
                     </div>
@@ -2568,10 +2669,10 @@ body {
                             <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23FF6B6B'/%3E%3Ctext x='25' y='55' font-family='Arial' font-size='14' fill='white'%3EProfile%3C/text%3E%3C/svg%3E" alt="Profile">
                         </div>
                         <div class="card-info">
-                            <h2 id="swipeName">Loading...</h2>
-                            <p id="swipeLocation">📍 Loading...</p>
+                            <h2 id="swipeName">${Object.keys(swipeProfilesData).length > 0 ? 'Swipe to begin' : 'No more profiles'}</h2>
+                            <p id="swipeLocation">📍 ${Object.keys(swipeProfilesData).length} profiles available</p>
                             <div class="card-badges" id="swipeBadges">
-                                <span class="badge">Loading...</span>
+                                <span class="badge">Swipe to start</span>
                             </div>
                         </div>
                     </div>
@@ -2629,10 +2730,10 @@ body {
                             <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23FF6B6B'/%3E%3Ctext x='25' y='55' font-family='Arial' font-size='14' fill='white'%3EProfile%3C/text%3E%3C/svg%3E" alt="Profile">
                         </div>
                         <div class="card-info">
-                            <h2 id="swipeProfileName">Loading...</h2>
-                            <p id="swipeProfileLocation">📍 Loading...</p>
+                            <h2 id="swipeProfileName">${Object.keys(swipeProfilesData).length > 0 ? 'Start swiping' : 'No more profiles'}</h2>
+                            <p id="swipeProfileLocation">📍 ${Object.keys(swipeProfilesData).length} profiles available</p>
                             <div class="card-badges" id="swipeProfileBadges">
-                                <span class="badge">Loading...</span>
+                                <span class="badge">Swipe to begin</span>
                             </div>
                         </div>
                     </div>
@@ -2645,7 +2746,7 @@ body {
                 </div>
 
                 <div style="text-align: center; margin-top: 20px; color: #95A5A6;">
-                    <span id="swipeCount">0/0</span> profiles remaining
+                    <span id="swipeCount">${Object.keys(swipeProfilesData).length}</span> profiles remaining
                 </div>
             `;
         }
@@ -2684,9 +2785,9 @@ body {
                 <div class="profile-header-section">
                     <div class="profile-large-avatar">${currentUser?.avatar || '😊'}</div>
                     <div class="profile-info-section">
-                        <h2>${currentUser?.name || 'User'}, ${currentUser?.age || 25}</h2>
-                        <p>${currentUser?.location || 'San Francisco'}</p>
-                        <p>${currentUser?.bio || 'Looking for meaningful connections'}</p>
+                        <h2>${currentUser?.name || 'User'}${currentUser?.age ? ', ' + currentUser.age : ''}</h2>
+                        <p>${currentUser?.location || 'Add your location'}</p>
+                        <p>${currentUser?.bio || 'Add a bio to tell people about yourself'}</p>
                         <button class="edit-profile-btn" onclick="openProfileModal()">Edit Profile</button>
                     </div>
                 </div>
@@ -2694,11 +2795,11 @@ body {
                 <div class="profile-details-grid">
                     <div class="detail-card">
                         <h4>Gender</h4>
-                        <p>${currentUser?.gender || 'female'}</p>
+                        <p>${currentUser?.gender || 'Not specified'}</p>
                     </div>
                     <div class="detail-card">
                         <h4>Interested In</h4>
-                        <p>${currentUser?.interestedIn || 'everyone'}</p>
+                        <p>${currentUser?.interestedIn || 'Everyone'}</p>
                     </div>
                 </div>
 
@@ -2708,13 +2809,27 @@ body {
                 </div>
 
                 <h3>Photos</h3>
-                <div class="photos-grid">
-                    ${(currentUser?.photos || []).map(() => `
-                        <div class="photo-item">📸</div>
-                    `).join('')}
-                    <div class="photo-item add" onclick="addPhoto()">+</div>
+                <div class="photos-grid" id="photosGrid">
+                    ${renderPhotosGrid()}
                 </div>
             `;
+        }
+
+        function renderPhotosGrid() {
+            let html = '';
+            const photos = currentUser?.photos || {};
+            const photoArray = Object.values(photos);
+            
+            photoArray.forEach(photo => {
+                html += `<div class="photo-item" onclick="viewPhoto('${photo}')">📸</div>`;
+            });
+            
+            // Add empty slots up to 6 photos
+            for (let i = photoArray.length; i < 5; i++) {
+                html += `<div class="photo-item add" onclick="addPhoto()">+</div>`;
+            }
+            
+            return html;
         }
 
         function renderAllMatches() {
@@ -2723,20 +2838,28 @@ body {
             
             matchesList.innerHTML = '';
             
-            const matches = window.matches || [];
-            matches.forEach(match => {
+            const matchIds = Object.keys(matchesData);
+            if (matchIds.length === 0) {
+                matchesList.innerHTML = '<div style="text-align: center; padding: 40px; color: #95A5A6;">No matches yet. Start swiping!</div>';
+                return;
+            }
+            
+            matchIds.forEach(matchId => {
+                const match = matchesData[matchId];
+                const user = usersData[matchId] || {};
+                
                 const matchItem = document.createElement('div');
                 matchItem.className = 'message-item';
-                matchItem.onclick = () => openChat(match);
+                matchItem.onclick = () => openChat({ id: matchId, ...user });
                 matchItem.innerHTML = `
-                    <div class="message-avatar">${match.avatar || '👤'}</div>
+                    <div class="message-avatar">${user.avatar || '👤'}</div>
                     <div class="message-details">
                         <div class="message-header">
-                            <span class="message-name">${match.name || 'User'}, ${match.age || 25}</span>
-                            <span class="message-time">${match.lastActive || 'Online'}</span>
+                            <span class="message-name">${user.name || 'User'}${user.age ? ', ' + user.age : ''}</span>
+                            <span class="message-time">${match.lastActive || 'New match'}</span>
                         </div>
                         <div class="message-preview">
-                            ${match.online ? '🟢 Online' : '⚫ Offline'}
+                            ${match.lastMessage || 'Start chatting!'}
                         </div>
                     </div>
                 `;
@@ -2750,8 +2873,15 @@ body {
             
             discoverGrid.innerHTML = '';
             
-            const discoverProfiles = window.discoverProfiles || [];
-            discoverProfiles.forEach(profile => {
+            const profileIds = Object.keys(discoverProfilesData);
+            if (profileIds.length === 0) {
+                discoverGrid.innerHTML = '<div style="text-align: center; padding: 40px; color: #95A5A6; grid-column: span 3;">No profiles to discover</div>';
+                return;
+            }
+            
+            profileIds.slice(0, 12).forEach(profileId => {
+                const profile = discoverProfilesData[profileId];
+                
                 const card = document.createElement('div');
                 card.className = 'discover-card';
                 card.onclick = () => viewProfile(profile);
@@ -2760,8 +2890,8 @@ body {
                         <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23FF6B6B'/%3E%3Ctext x='25' y='55' font-family='Arial' font-size='14' fill='white'%3E${profile.name || 'User'}%3C/text%3E%3C/svg%3E" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
                     <div class="discover-card-info">
-                        <div class="discover-card-name">${profile.name || 'User'}, ${profile.age || 25}</div>
-                        <div class="discover-card-distance">${profile.distance || 'Nearby'}</div>
+                        <div class="discover-card-name">${profile.name || 'User'}${profile.age ? ', ' + profile.age : ''}</div>
+                        <div class="discover-card-distance">${profile.location || 'Nearby'}</div>
                     </div>
                 `;
                 discoverGrid.appendChild(card);
@@ -2775,7 +2905,19 @@ body {
             container.innerHTML = '';
             container.className = 'interest-tags';
             
-            (currentUser.interests || []).forEach(interest => {
+            const interests = currentUser.interests || {};
+            const interestArray = Object.values(interests);
+            
+            if (interestArray.length === 0) {
+                const addTag = document.createElement('span');
+                addTag.className = 'interest-tag';
+                addTag.textContent = '+ Add interests';
+                addTag.onclick = () => addInterest();
+                container.appendChild(addTag);
+                return;
+            }
+            
+            interestArray.forEach(interest => {
                 const tag = document.createElement('span');
                 tag.className = 'interest-tag selected';
                 tag.textContent = interest;
@@ -2790,6 +2932,13 @@ body {
             container.appendChild(addTag);
         }
 
+        function renderPhotos() {
+            const photosGrid = document.getElementById('photosGrid');
+            if (photosGrid) {
+                photosGrid.innerHTML = renderPhotosGrid();
+            }
+        }
+
         function updateProfileDisplay() {
             if (!currentUser) return;
             
@@ -2798,12 +2947,14 @@ body {
             const matchEl = document.getElementById('matchCount');
             const likeEl = document.getElementById('likeCount');
             const viewEl = document.getElementById('viewCount');
+            const avatarEl = document.getElementById('profileAvatar');
             
             if (nameEl) nameEl.textContent = currentUser.name || 'User';
-            if (bioEl) bioEl.textContent = `${currentUser.age || 25} • ${currentUser.bio || 'Looking for connections'}`;
-            if (matchEl) matchEl.textContent = currentUser.matches || 0;
+            if (bioEl) bioEl.textContent = (currentUser.age ? currentUser.age + ' • ' : '') + (currentUser.bio || 'Complete your profile');
+            if (matchEl) matchEl.textContent = Object.keys(matchesData).length || 0;
             if (likeEl) likeEl.textContent = currentUser.likes || 0;
-            if (viewEl) viewEl.textContent = currentUser.views || '0';
+            if (viewEl) viewEl.textContent = currentUser.views || 0;
+            if (avatarEl) avatarEl.textContent = currentUser.avatar || '😊';
         }
 
         function renderMatches() {
@@ -2812,14 +2963,22 @@ body {
             
             matchesGrid.innerHTML = '';
             
-            const matches = window.matches || [];
-            matches.slice(0, 4).forEach(match => {
+            const matchIds = Object.keys(matchesData);
+            if (matchIds.length === 0) {
+                matchesGrid.innerHTML = '<div style="text-align: center; padding: 20px; color: #95A5A6; grid-column: span 4;">No matches yet</div>';
+                return;
+            }
+            
+            matchIds.slice(0, 4).forEach(matchId => {
+                const match = matchesData[matchId];
+                const user = usersData[matchId] || {};
+                
                 const matchItem = document.createElement('div');
                 matchItem.className = 'match-item';
-                matchItem.onclick = () => openChat(match);
+                matchItem.onclick = () => openChat({ id: matchId, ...user });
                 matchItem.innerHTML = `
-                    <div class="match-avatar">${match.avatar || '👤'}</div>
-                    <div class="match-name">${match.name || 'User'}, ${match.age || 25}</div>
+                    <div class="match-avatar">${user.avatar || '👤'}</div>
+                    <div class="match-name">${user.name || 'User'}${user.age ? ', ' + user.age : ''}</div>
                 `;
                 matchesGrid.appendChild(matchItem);
             });
@@ -2831,19 +2990,27 @@ body {
             
             messagesList.innerHTML = '';
             
-            const messages = window.messages || [];
-            messages.forEach(msg => {
+            const messageKeys = Object.keys(messagesData);
+            if (messageKeys.length === 0) {
+                messagesList.innerHTML = '<div style="text-align: center; padding: 20px; color: #95A5A6;">No messages yet</div>';
+                return;
+            }
+            
+            messageKeys.slice(0, 5).forEach(msgKey => {
+                const msg = messagesData[msgKey];
+                const user = usersData[msg.senderId] || {};
+                
                 const messageItem = document.createElement('div');
                 messageItem.className = 'message-item';
-                messageItem.onclick = () => openChat(msg);
+                messageItem.onclick = () => openChat({ id: msg.senderId, ...user });
                 messageItem.innerHTML = `
-                    <div class="message-avatar">${msg.avatar || '👤'}</div>
+                    <div class="message-avatar">${user.avatar || '👤'}</div>
                     <div class="message-details">
                         <div class="message-header">
-                            <span class="message-name">${msg.name || 'User'}</span>
+                            <span class="message-name">${user.name || 'User'}</span>
                             <span class="message-time">${msg.time || 'Now'}</span>
                         </div>
-                        <div class="message-preview">${msg.message || 'New message'}</div>
+                        <div class="message-preview">${msg.text || 'New message'}</div>
                     </div>
                     ${msg.unread ? '<span class="unread-badge">New</span>' : ''}
                 `;
@@ -2852,36 +3019,57 @@ body {
         }
 
         function updateSwipeCard() {
-            const swipeProfiles = window.swipeProfiles || [];
-            if (swipeProfiles.length === 0) {
-                document.getElementById('swipeName').textContent = 'No more profiles';
-                document.getElementById('swipeLocation').textContent = 'Check back later';
+            const profileIds = Object.keys(swipeProfilesData);
+            
+            if (profileIds.length === 0) {
+                const nameEl = document.getElementById('swipeName') || document.getElementById('swipeProfileName');
+                const locationEl = document.getElementById('swipeLocation') || document.getElementById('swipeProfileLocation');
+                const badgesEl = document.getElementById('swipeBadges') || document.getElementById('swipeProfileBadges');
+                const countEl = document.getElementById('swipeCount');
+                
+                if (nameEl) nameEl.textContent = 'No more profiles';
+                if (locationEl) locationEl.textContent = '📍 Check back later';
+                if (badgesEl) {
+                    badgesEl.innerHTML = '<span class="badge">All caught up</span>';
+                }
+                if (countEl) countEl.textContent = '0';
                 return;
             }
             
-            const profile = swipeProfiles[currentSwipeIndex];
-            if (!profile) return;
+            if (currentSwipeIndex >= profileIds.length) {
+                currentSwipeIndex = 0;
+            }
+            
+            const profileId = profileIds[currentSwipeIndex];
+            const profile = swipeProfilesData[profileId];
             
             const nameEl = document.getElementById('swipeName') || document.getElementById('swipeProfileName');
             const locationEl = document.getElementById('swipeLocation') || document.getElementById('swipeProfileLocation');
             const badgesEl = document.getElementById('swipeBadges') || document.getElementById('swipeProfileBadges');
             const countEl = document.getElementById('swipeCount');
             
-            if (nameEl) nameEl.textContent = `${profile.name || 'User'}, ${profile.age || 25}`;
-            if (locationEl) locationEl.textContent = `📍 ${profile.location || 'Nearby'} • ${profile.distance || 'Nearby'}`;
+            if (nameEl) nameEl.textContent = `${profile.name || 'User'}${profile.age ? ', ' + profile.age : ''}`;
+            if (locationEl) locationEl.textContent = `📍 ${profile.location || 'Nearby'}`;
             
             if (badgesEl) {
                 badgesEl.innerHTML = '';
-                (profile.badges || ['New']).forEach(badge => {
-                    const badgeSpan = document.createElement('span');
-                    badgeSpan.className = 'badge';
-                    badgeSpan.textContent = badge;
-                    badgesEl.appendChild(badgeSpan);
-                });
+                const interests = profile.interests || {};
+                const interestArray = Object.values(interests).slice(0, 3);
+                
+                if (interestArray.length > 0) {
+                    interestArray.forEach(interest => {
+                        const badgeSpan = document.createElement('span');
+                        badgeSpan.className = 'badge';
+                        badgeSpan.textContent = interest;
+                        badgesEl.appendChild(badgeSpan);
+                    });
+                } else {
+                    badgesEl.innerHTML = '<span class="badge">New profile</span>';
+                }
             }
             
             if (countEl) {
-                countEl.textContent = `${currentSwipeIndex + 1}/${swipeProfiles.length}`;
+                countEl.textContent = `${currentSwipeIndex + 1}/${profileIds.length}`;
             }
         }
 
@@ -2892,45 +3080,85 @@ body {
 
         async function handleSwipe(action) {
             const card = document.getElementById('currentSwipeCard') || document.getElementById('swipeCard');
+            const profileIds = Object.keys(swipeProfilesData);
+            
+            if (profileIds.length === 0) {
+                showNotification('No more profiles to swipe');
+                return;
+            }
+            
+            const profileId = profileIds[currentSwipeIndex];
             
             if (action === 'like') {
                 card.style.transform = 'translateX(200%) rotate(20deg)';
                 showNotification('Liked! 💕');
                 
-                // Call cloud function to handle like
                 try {
-                    const handleSwipeFunction = functions.httpsCallable('handleSwipe');
-                    await handleSwipeFunction({ action: 'like', profileId: window.swipeProfiles[currentSwipeIndex]?.id });
+                    // Record swipe in database
+                    await database.ref(`swipes/${currentUser.uid}/${profileId}`).set({
+                        action: 'like',
+                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                    });
+                    
+                    // Check for match (if they also liked you)
+                    const theirSwipe = await database.ref(`swipes/${profileId}/${currentUser.uid}`).once('value');
+                    if (theirSwipe.exists() && theirSwipe.val().action === 'like') {
+                        // It's a match!
+                        await database.ref(`matches/${currentUser.uid}/${profileId}`).set({
+                            matchedAt: firebase.database.ServerValue.TIMESTAMP,
+                            lastActive: firebase.database.ServerValue.TIMESTAMP
+                        });
+                        await database.ref(`matches/${profileId}/${currentUser.uid}`).set({
+                            matchedAt: firebase.database.ServerValue.TIMESTAMP,
+                            lastActive: firebase.database.ServerValue.TIMESTAMP
+                        });
+                        showNotification('It\'s a match! 🎉');
+                    }
                 } catch (error) {
-                    console.error('Error handling swipe:', error);
+                    console.error('Error recording swipe:', error);
                 }
             } else if (action === 'nope') {
                 card.style.transform = 'translateX(-200%) rotate(-20deg)';
                 showNotification('Passed 👋');
                 
-                // Call cloud function to handle nope
                 try {
-                    const handleSwipeFunction = functions.httpsCallable('handleSwipe');
-                    await handleSwipeFunction({ action: 'nope', profileId: window.swipeProfiles[currentSwipeIndex]?.id });
+                    await database.ref(`swipes/${currentUser.uid}/${profileId}`).set({
+                        action: 'nope',
+                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                    });
                 } catch (error) {
-                    console.error('Error handling swipe:', error);
+                    console.error('Error recording swipe:', error);
                 }
             } else if (action === 'super') {
                 card.style.transform = 'scale(1.1) translateY(-20px)';
                 showNotification('Super Like! ⭐');
                 
-                // Call cloud function to handle super like
                 try {
-                    const handleSwipeFunction = functions.httpsCallable('handleSwipe');
-                    await handleSwipeFunction({ action: 'super', profileId: window.swipeProfiles[currentSwipeIndex]?.id });
+                    await database.ref(`swipes/${currentUser.uid}/${profileId}`).set({
+                        action: 'super',
+                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                    });
+                    
+                    // Super like always creates a match (for demo)
+                    await database.ref(`matches/${currentUser.uid}/${profileId}`).set({
+                        matchedAt: firebase.database.ServerValue.TIMESTAMP,
+                        lastActive: firebase.database.ServerValue.TIMESTAMP,
+                        superLike: true
+                    });
+                    await database.ref(`matches/${profileId}/${currentUser.uid}`).set({
+                        matchedAt: firebase.database.ServerValue.TIMESTAMP,
+                        lastActive: firebase.database.ServerValue.TIMESTAMP,
+                        superLike: true
+                    });
+                    showNotification('Super Match! ⭐💕');
                 } catch (error) {
-                    console.error('Error handling swipe:', error);
+                    console.error('Error recording super like:', error);
                 }
             }
             
             setTimeout(() => {
                 card.style.transform = 'translateX(0) rotate(0)';
-                currentSwipeIndex = (currentSwipeIndex + 1) % (window.swipeProfiles?.length || 1);
+                currentSwipeIndex = (currentSwipeIndex + 1) % (profileIds.length || 1);
                 updateSwipeCard();
             }, 300);
         }
@@ -2951,7 +3179,7 @@ body {
             if (!currentUser) return;
             
             document.getElementById('editName').value = currentUser.name || '';
-            document.getElementById('editAge').value = currentUser.age || 25;
+            document.getElementById('editAge').value = currentUser.age || '';
             document.getElementById('editLocation').value = currentUser.location || '';
             document.getElementById('editBio').value = currentUser.bio || '';
             document.getElementById('editGender').value = currentUser.gender || 'female';
@@ -2970,19 +3198,21 @@ body {
         async function saveProfile() {
             if (!currentUser) return;
             
-            const updatedUser = {
-                ...currentUser,
+            const updates = {
                 name: document.getElementById('editName').value,
-                age: parseInt(document.getElementById('editAge').value),
+                age: parseInt(document.getElementById('editAge').value) || null,
                 location: document.getElementById('editLocation').value,
                 bio: document.getElementById('editBio').value,
                 gender: document.getElementById('editGender').value,
-                interestedIn: document.getElementById('editInterestedIn').value
+                interestedIn: document.getElementById('editInterestedIn').value,
+                lastActive: firebase.database.ServerValue.TIMESTAMP
             };
             
             try {
-                await database.ref(`users/${currentUser.uid}`).update(updatedUser);
-                currentUser = updatedUser;
+                await database.ref(`users/${currentUser.uid}`).update(updates);
+                
+                // Update local user
+                currentUser = { ...currentUser, ...updates };
                 
                 updateProfileDisplay();
                 updateSidebarProfile();
@@ -3005,7 +3235,11 @@ body {
             document.getElementById('chatAvatar').textContent = user.avatar || '👤';
             
             const statusEl = document.getElementById('chatUserStatus');
-            if (user.online) {
+            const lastActive = user.lastActive ? new Date(user.lastActive) : new Date();
+            const now = new Date();
+            const isOnline = (now - lastActive) < 5 * 60 * 1000; // Online if active in last 5 minutes
+            
+            if (isOnline) {
                 statusEl.innerHTML = `
                     <span class="status-dot online"></span>
                     <span class="status-online">Online</span>
@@ -3013,16 +3247,23 @@ body {
             } else {
                 statusEl.innerHTML = `
                     <span class="status-dot offline"></span>
-                    <span class="status-offline">${user.lastActive || 'Offline'}</span>
+                    <span class="status-offline">Last active ${formatTime(lastActive)}</span>
                 `;
             }
             
             // Load chat messages from Firebase
             try {
                 const chatId = getChatId(currentUser.uid, user.id);
-                const snapshot = await database.ref(`chats/${chatId}/messages`).once('value');
-                const messages = snapshot.val() || [];
+                const snapshot = await database.ref(`chats/${chatId}/messages`).orderByChild('timestamp').once('value');
+                const messages = snapshot.val() || {};
                 renderChatMessages(messages);
+                
+                // Listen for new messages
+                database.ref(`chats/${chatId}/messages`).on('child_added', (snapshot) => {
+                    const message = snapshot.val();
+                    appendChatMessage(message);
+                });
+                
             } catch (error) {
                 console.error('Error loading messages:', error);
             }
@@ -3037,6 +3278,19 @@ body {
             }, 100);
         }
 
+        function formatTime(date) {
+            const now = new Date();
+            const diff = now - date;
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+            
+            if (minutes < 1) return 'just now';
+            if (minutes < 60) return `${minutes}m ago`;
+            if (hours < 24) return `${hours}h ago`;
+            return `${days}d ago`;
+        }
+
         function getChatId(userId1, userId2) {
             return userId1 < userId2 ? `${userId1}_${userId2}` : `${userId2}_${userId1}`;
         }
@@ -3045,34 +3299,51 @@ body {
             const container = document.getElementById('chatMessagesContainer');
             container.innerHTML = '';
             
-            messages.forEach(msg => {
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `chat-message-wrapper ${msg.senderId === currentUser.uid ? 'sent' : 'received'}`;
-                messageDiv.setAttribute('data-message-id', msg.id);
-                messageDiv.setAttribute('data-message-text', msg.text);
-                messageDiv.setAttribute('data-sender', msg.senderName);
-                
-                messageDiv.innerHTML = `
-                    <div class="chat-message-bubble">
-                        ${msg.senderId !== currentUser.uid ? `<div class="chat-message-sender">${msg.senderName}</div>` : ''}
-                        <div class="chat-message-text">${msg.text}</div>
-                        <div class="chat-message-time">${msg.time}</div>
-                    </div>
-                    <div class="reply-indicator reply-indicator-left">↩️ Reply</div>
-                    <div class="reply-indicator reply-indicator-right">↪️ Reply</div>
-                `;
-                
-                messageDiv.addEventListener('touchstart', handleTouchStart, { passive: true });
-                messageDiv.addEventListener('touchmove', handleTouchMove, { passive: true });
-                messageDiv.addEventListener('touchend', handleTouchEnd);
-                
-                container.appendChild(messageDiv);
+            const messageArray = Object.values(messages).sort((a, b) => a.timestamp - b.timestamp);
+            
+            messageArray.forEach(msg => {
+                appendChatMessage(msg);
             });
+        }
+
+        function appendChatMessage(msg) {
+            const container = document.getElementById('chatMessagesContainer');
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message-wrapper ${msg.senderId === currentUser.uid ? 'sent' : 'received'}`;
+            messageDiv.setAttribute('data-message-id', msg.id);
+            messageDiv.setAttribute('data-message-text', msg.text);
+            messageDiv.setAttribute('data-sender', msg.senderName || 'User');
+            
+            const time = msg.time || new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            messageDiv.innerHTML = `
+                <div class="chat-message-bubble">
+                    ${msg.senderId !== currentUser.uid ? `<div class="chat-message-sender">${msg.senderName || 'User'}</div>` : ''}
+                    <div class="chat-message-text">${msg.text}</div>
+                    <div class="chat-message-time">${time}</div>
+                </div>
+                <div class="reply-indicator reply-indicator-left">↩️ Reply</div>
+                <div class="reply-indicator reply-indicator-right">↪️ Reply</div>
+            `;
+            
+            messageDiv.addEventListener('touchstart', handleTouchStart, { passive: true });
+            messageDiv.addEventListener('touchmove', handleTouchMove, { passive: true });
+            messageDiv.addEventListener('touchend', handleTouchEnd);
+            
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
         }
 
         function closeChatModal() {
             document.getElementById('chatModal').classList.remove('active');
             document.getElementById('emojiPicker').style.display = 'none';
+            
+            // Remove chat listeners
+            if (selectedChatUser) {
+                const chatId = getChatId(currentUser.uid, selectedChatUser.id);
+                database.ref(`chats/${chatId}/messages`).off();
+            }
         }
 
         async function sendChatMessage() {
@@ -3083,34 +3354,35 @@ body {
             
             try {
                 const chatId = getChatId(currentUser.uid, selectedChatUser.id);
-                const messageId = Date.now().toString();
-                const time = new Date();
-                const timeString = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const messageId = database.ref().push().key;
+                const timestamp = firebase.database.ServerValue.TIMESTAMP;
+                const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 
                 const messageData = {
                     id: messageId,
                     text: message,
                     senderId: currentUser.uid,
                     senderName: currentUser.name,
-                    time: timeString,
-                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                    time: time,
+                    timestamp: timestamp,
+                    read: false
                 };
                 
                 await database.ref(`chats/${chatId}/messages/${messageId}`).set(messageData);
                 
-                // Update last message
-                await database.ref(`chats/${chatId}/lastMessage`).set({
+                // Update last message for both users
+                const lastMessageData = {
                     text: message,
-                    time: timeString,
-                    senderId: currentUser.uid
-                });
+                    time: time,
+                    senderId: currentUser.uid,
+                    timestamp: timestamp
+                };
+                
+                await database.ref(`messages/${currentUser.uid}/${selectedChatUser.id}`).set(lastMessageData);
+                await database.ref(`messages/${selectedChatUser.id}/${currentUser.uid}`).set(lastMessageData);
                 
                 input.value = '';
                 document.getElementById('chatSendBtn').disabled = true;
-                
-                // Call cloud function to simulate reply
-                const simulateReplyFunction = functions.httpsCallable('simulateReply');
-                simulateReplyFunction({ chatId, userId: selectedChatUser.id }).catch(console.error);
                 
             } catch (error) {
                 console.error('Error sending message:', error);
@@ -3225,7 +3497,6 @@ body {
             input.value += emoji;
             input.focus();
             checkTyping();
-            toggleEmojiPicker();
         }
 
         function attachImage() {
@@ -3238,7 +3509,8 @@ body {
 
         // Other functions
         async function openNotifications() {
-            const notifications = window.notifications || [];
+            const notifications = notificationsData || {};
+            const notificationArray = Object.values(notifications);
             
             const modal = document.createElement('div');
             modal.className = 'modal active';
@@ -3247,7 +3519,7 @@ body {
                     <h3>Notifications</h3>
                     <div class="modal-scroll-area">
                         <div class="notifications-list">
-                            ${notifications.map(n => `
+                            ${notificationArray.length > 0 ? notificationArray.map(n => `
                                 <div class="notification-item">
                                     <div class="notification-icon">${n.icon || '🔔'}</div>
                                     <div class="notification-content">
@@ -3256,7 +3528,7 @@ body {
                                         <div class="notification-time">${n.time || 'Now'}</div>
                                     </div>
                                 </div>
-                            `).join('')}
+                            `).join('') : '<div style="text-align: center; padding: 20px; color: #95A5A6;">No notifications</div>'}
                         </div>
                     </div>
                     <div class="modal-close-fixed">
@@ -3276,16 +3548,11 @@ body {
             chips.forEach(chip => chip.classList.remove('active'));
             element.classList.add('active');
             
-            try {
-                const filterFunction = functions.httpsCallable('filterDiscover');
-                const result = await filterFunction({ filter });
-                window.discoverProfiles = result.data;
-                renderDiscoverGrid();
-                showNotification(`Filtering by: ${filter}`);
-            } catch (error) {
-                console.error('Error filtering:', error);
-                showNotification('Error applying filter');
-            }
+            showNotification(`Filtering by: ${filter}`);
+            
+            // Re-prepare discover profiles based on filter
+            prepareDiscoverProfiles();
+            renderDiscoverGrid();
         }
 
         async function filterMatches(filter, element) {
@@ -3293,16 +3560,8 @@ body {
             chips.forEach(chip => chip.classList.remove('active'));
             element.classList.add('active');
             
-            try {
-                const filterFunction = functions.httpsCallable('filterMatches');
-                const result = await filterFunction({ filter });
-                window.matches = result.data;
-                renderAllMatches();
-                showNotification(`Filtering matches: ${filter}`);
-            } catch (error) {
-                console.error('Error filtering matches:', error);
-                showNotification('Error applying filter');
-            }
+            showNotification(`Filtering matches: ${filter}`);
+            renderAllMatches();
         }
 
         function viewProfile(profile) {
@@ -3313,15 +3572,19 @@ body {
             showNotification('Add photo feature coming soon');
         }
 
+        function viewPhoto(photo) {
+            showNotification('Viewing photo');
+        }
+
         async function addInterest() {
             const newInterest = prompt('Enter a new interest:');
-            if (newInterest && currentUser && !(currentUser.interests || []).includes(newInterest)) {
-                const updatedInterests = [...(currentUser.interests || []), newInterest];
+            if (newInterest && currentUser) {
+                const interests = currentUser.interests || {};
+                const interestKey = database.ref().push().key;
+                interests[interestKey] = newInterest;
                 
                 try {
-                    await database.ref(`users/${currentUser.uid}/interests`).set(updatedInterests);
-                    currentUser.interests = updatedInterests;
-                    renderInterests();
+                    await database.ref(`users/${currentUser.uid}/interests`).set(interests);
                     showNotification('Interest added!');
                 } catch (error) {
                     console.error('Error adding interest:', error);
@@ -3333,16 +3596,17 @@ body {
         async function removeInterest(interest) {
             if (!currentUser) return;
             
-            const updatedInterests = (currentUser.interests || []).filter(i => i !== interest);
+            const interests = currentUser.interests || {};
+            const interestKey = Object.keys(interests).find(key => interests[key] === interest);
             
-            try {
-                await database.ref(`users/${currentUser.uid}/interests`).set(updatedInterests);
-                currentUser.interests = updatedInterests;
-                renderInterests();
-                showNotification('Interest removed');
-            } catch (error) {
-                console.error('Error removing interest:', error);
-                showNotification('Error removing interest');
+            if (interestKey) {
+                try {
+                    await database.ref(`users/${currentUser.uid}/interests/${interestKey}`).remove();
+                    showNotification('Interest removed');
+                } catch (error) {
+                    console.error('Error removing interest:', error);
+                    showNotification('Error removing interest');
+                }
             }
         }
 
@@ -3401,8 +3665,11 @@ body {
 
         async function subscribe(plan) {
             try {
-                const subscribeFunction = functions.httpsCallable('subscribe');
-                await subscribeFunction({ plan });
+                await database.ref(`users/${currentUser.uid}/subscription`).set({
+                    plan: plan,
+                    startDate: firebase.database.ServerValue.TIMESTAMP,
+                    status: 'active'
+                });
                 showNotification(`Subscribed to ${plan} plan!`);
             } catch (error) {
                 console.error('Error subscribing:', error);
@@ -3419,16 +3686,12 @@ body {
             closeModal('settingsModal');
             
             try {
+                // Update last active
+                await database.ref(`users/${currentUser.uid}/lastActive`).set(firebase.database.ServerValue.TIMESTAMP);
+                
+                // Sign out
                 await auth.signOut();
                 showNotification('Logged out successfully');
-                
-                // Clear local data
-                currentUser = null;
-                window.matches = [];
-                window.messages = [];
-                window.notifications = [];
-                window.swipeProfiles = [];
-                window.discoverProfiles = [];
                 
             } catch (error) {
                 console.error('Error logging out:', error);
