@@ -103,87 +103,22 @@
         .nav-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; color: #95a5a6; transition: all 0.3s; padding: 10px 12px; gap: 4px; z-index: 2; }
         .nav-item.active { color: #FF6B6B; transform: translateY(-4px); }
         .nav-item span { font-size: 24px; }
-        /* Chat Page - Fixed full screen fit */
-        .chat-page { 
-            display: flex; 
-            flex-direction: column; 
-            height: 100%; 
-            width: 100%;
-            background: white;
-            position: relative;
-            overflow: hidden;
-        }
-        .chat-header { 
-            display: flex; 
-            align-items: center; 
-            padding: 15px 20px; 
-            border-bottom: 1px solid #f0f2f4; 
-            background: white;
-            flex-shrink: 0;
-            z-index: 2;
-        }
+        /* Chat Page */
+        .chat-page { display: flex; flex-direction: column; height: 100%; width: 100%; background: white; position: relative; overflow: hidden; }
+        .chat-header { display: flex; align-items: center; padding: 15px 20px; border-bottom: 1px solid #f0f2f4; background: white; flex-shrink: 0; z-index: 2; }
         .chat-back-btn { font-size: 24px; cursor: pointer; margin-right: 15px; color: #2c3e50; }
         .chat-user-name { font-weight: 600; font-size: 18px; color: #2c3e50; }
         .chat-user-status { font-size: 12px; color: #4ECDC4; }
-        .chat-messages-container { 
-            flex: 1; 
-            overflow-y: auto; 
-            padding: 20px; 
-            background: #f8f9fa;
-            min-height: 0; /* Critical for flex scrolling */
-        }
+        .chat-messages-container { flex: 1; overflow-y: auto; padding: 20px; background: #f8f9fa; min-height: 0; }
         .chat-message-wrapper { display: flex; margin-bottom: 12px; }
         .chat-message-wrapper.sent { justify-content: flex-end; }
-        .chat-message-bubble { 
-            max-width: 70%; 
-            padding: 12px 18px; 
-            border-radius: 20px; 
-            word-wrap: break-word;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-        }
-        .sent .chat-message-bubble { 
-            background: linear-gradient(135deg, #FF6B6B, #4ECDC4); 
-            color: white; 
-            border-bottom-right-radius: 4px;
-        }
-        .received .chat-message-bubble { 
-            background: white; 
-            color: #2c3e50; 
-            border-bottom-left-radius: 4px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-        }
-        .chat-input-area { 
-            background: white; 
-            padding: 12px 16px; 
-            display: flex; 
-            gap: 10px; 
-            border-top: 1px solid #f0f2f4;
-            flex-shrink: 0;
-        }
-        .chat-input-field { 
-            flex: 1; 
-            background: #f8f9fa; 
-            border: none; 
-            border-radius: 25px; 
-            padding: 12px 18px; 
-            font-size: 16px;
-            outline: none;
-        }
-        .chat-send-btn { 
-            width: 45px; 
-            height: 45px; 
-            border-radius: 50%; 
-            background: linear-gradient(135deg, #FF6B6B, #4ECDC4); 
-            color: white; 
-            border: none; 
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            transition: transform 0.2s;
-        }
-        .chat-send-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .chat-message-bubble { max-width: 70%; padding: 12px 18px; border-radius: 20px; word-wrap: break-word; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .sent .chat-message-bubble { background: linear-gradient(135deg, #FF6B6B, #4ECDC4); color: white; border-bottom-right-radius: 4px; }
+        .received .chat-message-bubble { background: white; color: #2c3e50; border-bottom-left-radius: 4px; }
+        .chat-input-area { background: white; padding: 12px 16px; display: flex; gap: 10px; border-top: 1px solid #f0f2f4; flex-shrink: 0; }
+        .chat-input-field { flex: 1; background: #f8f9fa; border: none; border-radius: 25px; padding: 12px 18px; font-size: 16px; outline: none; }
+        .chat-send-btn { width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #FF6B6B, #4ECDC4); color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: transform 0.2s; }
+        .chat-send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         /* Modals */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(5px); }
         .modal.active { display: flex; }
@@ -211,21 +146,11 @@
         .auth-btn .spinner { width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-top: 2px solid white; border-radius: 50%; animation: spin 0.8s linear infinite; display: none; }
         .auth-btn.loading .spinner { display: inline-block; }
         .auth-btn.loading .btn-text { display: none; }
-        /* Chat modal specific adjustments */
-        #chatModal .modal-content {
-            max-width: 500px;
-            width: 90%;
-            height: 85vh;
-            max-height: 85vh;
-            border-radius: 28px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-        #chatModal {
-            align-items: center;
-            justify-content: center;
-        }
+        #chatModal .modal-content { max-width: 500px; width: 90%; height: 85vh; max-height: 85vh; border-radius: 28px; overflow: hidden; display: flex; flex-direction: column; }
+        #chatModal { align-items: center; justify-content: center; }
+        /* Photo viewer modal for other profiles */
+        .photo-viewer-modal .modal-content { max-width: 90vw; max-height: 90vh; background: black; padding: 0; border-radius: 20px; overflow: hidden; }
+        .photo-viewer-modal img { width: 100%; height: auto; max-height: 85vh; object-fit: contain; }
         @media (max-width: 768px) {
             .sidebar { display: none; }
             .main-content { padding: 0 15px 20px 15px; height: calc(100vh - 80px); }
@@ -239,17 +164,7 @@
             .profile-hero-content { flex-direction: column; text-align: center; }
             .profile-info-grid { grid-template-columns: 1fr; }
             .photos-grid { grid-template-columns: repeat(2, 1fr); }
-            #chatModal .modal-content {
-                width: 100%;
-                height: 100%;
-                max-height: 100%;
-                border-radius: 0;
-                top: 0;
-                position: fixed;
-                left: 0;
-                right: 0;
-                bottom: 0;
-            }
+            #chatModal .modal-content { width: 100%; height: 100%; max-height: 100%; border-radius: 0; }
             .chat-message-bubble { max-width: 85%; }
         }
     </style>
@@ -267,23 +182,25 @@
     <div class="modal" id="settingsModal"><div class="modal-content"><h3 style="padding:20px 20px 0;"><i class="fas fa-cog"></i> Settings</h3><div class="modal-scroll-area"><div onclick="openNotificationSettings()" style="padding:15px;background:#f8f9fa;border-radius:12px;margin-bottom:10px;"><i class="fas fa-bell"></i> <strong>Notifications</strong></div><div onclick="openPrivacySettings()" style="padding:15px;background:#f8f9fa;border-radius:12px;margin-bottom:10px;"><i class="fas fa-lock"></i> <strong>Privacy</strong></div><div onclick="openSubscriptionPage()" style="padding:15px;background:#f8f9fa;border-radius:12px;margin-bottom:10px;"><i class="fas fa-star"></i> <strong>Subscription</strong></div><div onclick="openHelpPage()" style="padding:15px;background:#f8f9fa;border-radius:12px;margin-bottom:10px;"><i class="fas fa-question-circle"></i> <strong>Help</strong></div><div onclick="logout()" style="padding:15px;background:#f8f9fa;border-radius:12px;"><i class="fas fa-sign-out-alt"></i> <strong>Logout</strong></div></div><div class="modal-close-fixed"><button onclick="closeModal('settingsModal')">Close</button></div></div></div>
     <div class="modal" id="chatModal"><div class="modal-content" style="padding:0; display:flex; flex-direction:column;"><div class="chat-page"><div class="chat-header"><span class="chat-back-btn" onclick="closeChatModal()"><i class="fas fa-arrow-left"></i></span><div><div class="chat-user-name" id="chatUserName"></div><div class="chat-user-status" id="chatUserStatus"></div></div></div><div class="chat-messages-container" id="chatMessagesContainer"></div><div class="chat-input-area"><input type="text" class="chat-input-field" id="chatMessageInput" placeholder="Type a message..." onkeyup="checkTyping()" onkeypress="handleChatKeyPress(event)"><button class="chat-send-btn" id="chatSendBtn" onclick="sendChatMessage()" disabled><i class="fas fa-paper-plane"></i></button></div></div></div></div>
     <div class="modal" id="avatarUploadModal"><div class="modal-content"><h3 style="padding:20px 20px 0;"><i class="fas fa-camera"></i> Update Photo</h3><div class="modal-scroll-area" style="text-align:center;"><div class="avatar-preview" id="avatarPreview" style="width:150px;height:150px;border-radius:50%;margin:0 auto;background:#f8f9fa;display:flex;align-items:center;justify-content:center;overflow:hidden;"><span id="avatarPreviewEmoji">😊</span><img id="avatarPreviewImg" src="" style="display:none;width:100%;height:100%;object-fit:cover;"></div><input type="file" id="avatarFileInput" class="file-input" accept="image/*" onchange="handleAvatarSelect(event)"><button class="upload-btn" onclick="document.getElementById('avatarFileInput').click()" style="margin-top:15px;background:linear-gradient(135deg,#FF6B6B,#4ECDC4);color:white;border:none;padding:10px 20px;border-radius:25px;"><i class="fas fa-upload"></i> Choose</button><div class="upload-progress" id="uploadProgress" style="margin-top:10px;display:none;"><div class="upload-progress-bar" id="uploadProgressBar" style="height:4px;background:#FF6B6B;width:0%;"></div></div></div><div class="modal-close-fixed"><button onclick="uploadAvatar()" id="uploadAvatarBtn" disabled>Upload</button><button onclick="closeModal('avatarUploadModal')">Cancel</button></div></div></div>
+    <!-- Photo Upload Modal for Profile Gallery -->
+    <div class="modal" id="photoUploadModal"><div class="modal-content"><h3 style="padding:20px 20px 0;"><i class="fas fa-images"></i> Add Photo</h3><div class="modal-scroll-area" style="text-align:center;"><input type="file" id="photoFileInput" accept="image/*" onchange="previewGalleryPhoto(event)"><div id="galleryPreview" style="margin:15px 0; max-width:100%;"><img id="galleryPreviewImg" style="max-width:100%; border-radius:12px; display:none;"></div></div><div class="modal-close-fixed"><button onclick="uploadGalleryPhoto()" id="uploadGalleryBtn" disabled>Upload</button><button onclick="closeModal('photoUploadModal')">Cancel</button></div></div></div>
+    <!-- Profile Viewer Modal for other users -->
+    <div class="modal" id="profileViewerModal"><div class="modal-content" style="max-width:600px;"><div class="modal-scroll-area" id="profileViewerContent"></div><div class="modal-close-fixed"><button onclick="closeModal('profileViewerModal')">Close</button></div></div></div>
+    <div class="modal photo-viewer-modal" id="photoViewerModal"><div class="modal-content"><img id="fullImageView" src=""><div class="modal-close-fixed"><button onclick="closeModal('photoViewerModal')">Close</button></div></div></div>
 </div>
 <div class="auth-container" id="authContainer"><div class="auth-box"><div class="auth-logo"><h1>8Teen</h1></div><div class="auth-tabs"><div class="auth-tab active" id="signinTab" onclick="switchAuthTab('signin')">Sign In</div><div class="auth-tab" id="signupTab" onclick="switchAuthTab('signup')">Sign Up</div></div><div id="signinForm"><div class="auth-form"><input type="email" class="auth-input" id="signinEmail" placeholder="Email"><input type="password" class="auth-input" id="signinPassword" placeholder="Password"><button class="auth-btn" id="signinBtn" onclick="signIn()"><span class="spinner"></span><span class="btn-text"><i class="fas fa-sign-in-alt"></i> Sign In</span></button></div><div class="auth-footer">Don't have an account? <span onclick="switchAuthTab('signup')">Sign Up</span></div></div><div id="signupForm" style="display:none;"><div class="auth-form"><input type="text" class="auth-input" id="signupName" placeholder="Full Name"><input type="email" class="auth-input" id="signupEmail" placeholder="Email"><input type="password" class="auth-input" id="signupPassword" placeholder="Password"><input type="password" class="auth-input" id="signupConfirmPassword" placeholder="Confirm Password"><button class="auth-btn" id="signupBtn" onclick="signUp()"><span class="spinner"></span><span class="btn-text"><i class="fas fa-user-plus"></i> Sign Up</span></button></div><div class="auth-footer">Already have an account? <span onclick="switchAuthTab('signin')">Sign In</span></div></div></div></div>
 
 <script>
-// All existing JavaScript code preserved exactly, with no features removed.
-// (Full original script content remains identical, ensuring 100% functionality)
 const firebaseConfig = { apiKey: "AIzaSyAMRJyIkwzOfaIGK2u7-32RyIBTYzvCDLI", authDomain: "date-198b3.firebaseapp.com", databaseURL: "https://date-198b3-default-rtdb.europe-west1.firebasedatabase.app", projectId: "date-198b3", storageBucket: "date-198b3.firebasestorage.app", messagingSenderId: "400441648580", appId: "1:400441648580:web:a50157037096b46321b091" };
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database(), auth = firebase.auth(), storage = firebase.storage();
-let currentUser = null, currentPage = 'home', selectedChatUser = null, isAuthenticated = false, currentSwipeIndex = 0, matchesData = {}, messagesData = {}, swipeProfilesData = {}, discoverProfilesData = {}, usersData = {}, activeListeners = {}, selectedAvatarFile = null;
+let currentUser = null, currentPage = 'home', selectedChatUser = null, isAuthenticated = false, currentSwipeIndex = 0, matchesData = {}, messagesData = {}, swipeProfilesData = {}, discoverProfilesData = {}, usersData = {}, activeListeners = {}, selectedAvatarFile = null, selectedGalleryFile = null;
 
 function showToast(title, message, icon = '🔔') { const toast = document.createElement('div'); toast.className = 'toast-notification'; toast.innerHTML = `<div style="font-size:24px;">${icon}</div><div><strong>${title}</strong><div>${message}</div></div>`; document.body.appendChild(toast); setTimeout(() => toast.remove(), 3000); }
 function setAuthLoading(loading, isSignIn) { const btn = isSignIn ? document.getElementById('signinBtn') : document.getElementById('signupBtn'); if (loading) { btn.classList.add('loading'); btn.disabled = true; } else { btn.classList.remove('loading'); btn.disabled = false; } }
 async function signIn() { const email = document.getElementById('signinEmail').value, password = document.getElementById('signinPassword').value; if (!email || !password) { showToast('Error', 'Please enter email and password', '⚠️'); return; } setAuthLoading(true, true); try { await auth.signInWithEmailAndPassword(email, password); } catch (error) { showToast('Error', error.message, '❌'); } finally { setAuthLoading(false, true); } }
 async function signUp() { const name = document.getElementById('signupName').value, email = document.getElementById('signupEmail').value, password = document.getElementById('signupPassword').value, confirm = document.getElementById('signupConfirmPassword').value; if (!name || !email || !password) { showToast('Error', 'Please fill all fields', '⚠️'); return; } if (password !== confirm) { showToast('Error', 'Passwords do not match', '⚠️'); return; } setAuthLoading(true, false); try { const userCredential = await auth.createUserWithEmailAndPassword(email, password); await database.ref(`users/${userCredential.user.uid}`).set({ uid: userCredential.user.uid, email, name, age: null, location: '', bio: '', gender: '', interestedIn: 'everyone', avatar: '😊', avatarUrl: null, photos: {}, interests: {}, matches: 0, likes: 0, views: 0 }); } catch (error) { showToast('Error', error.message, '❌'); } finally { setAuthLoading(false, false); } }
 function switchAuthTab(tab) { const st = document.getElementById('signinTab'), su = document.getElementById('signupTab'), sf = document.getElementById('signinForm'), suf = document.getElementById('signupForm'); if (tab === 'signin') { st.classList.add('active'); su.classList.remove('active'); sf.style.display = 'block'; suf.style.display = 'none'; } else { su.classList.add('active'); st.classList.remove('active'); suf.style.display = 'block'; sf.style.display = 'none'; } }
-
 auth.onAuthStateChanged(async (user) => { if (user) { isAuthenticated = true; await loadAllUserData(user.uid); showApp(); setupRealtimeListeners(user.uid); loadPage('home'); updateSidebar(); initMorphingNav(); } else showAuth(); });
 async function loadAllUserData(uid) { const snap = await database.ref(`users/${uid}`).once('value'); if (!snap.exists()) { await database.ref(`users/${uid}`).set({ uid, email: auth.currentUser?.email, name: auth.currentUser?.email?.split('@')[0] || 'User', age: null, location: '', bio: '', gender: '', interestedIn: 'everyone', avatar: '😊', avatarUrl: null, photos: {}, interests: {}, matches: 0, likes: 0, views: 0 }); currentUser = { uid, name: auth.currentUser?.email?.split('@')[0] || 'User' }; } else currentUser = snap.val(); const msnap = await database.ref(`matches/${uid}`).once('value'); matchesData = msnap.val() || {}; const usnap = await database.ref('users').once('value'); usersData = usnap.val() || {}; prepareProfiles(); }
 function prepareProfiles() { if (!currentUser || !usersData) return; swipeProfilesData = {}; discoverProfilesData = {}; Object.keys(usersData).forEach(uid => { if (uid !== currentUser.uid) { swipeProfilesData[uid] = usersData[uid]; discoverProfilesData[uid] = usersData[uid]; } }); }
@@ -299,11 +216,13 @@ function renderDiscoverPage() { return `<div class="header"><h1 class="page-titl
 function renderSwipePage() { return `<div class="header"><h1 class="page-title">Swipe</h1><div class="header-icons"><span onclick="openFilters()"><i class="fas fa-filter"></i></span><span onclick="openSettingsModal()"><i class="fas fa-sliders-h"></i></span></div></div><div class="swipe-container" style="height:500px;"><div class="swipe-card" id="swipeCard"><div class="card-image"><img id="swipeCardImg2" src=""></div><div class="card-info"><h2 id="swipeProfileName">Start swiping</h2><p id="swipeProfileLocation">📍 Find your match</p><div id="swipeProfileBadges"></div></div></div></div><div class="swipe-actions"><button class="action-btn nope" onclick="handleSwipe('nope')"><i class="fas fa-times"></i></button><button class="action-btn super" onclick="handleSwipe('super')"><i class="fas fa-star"></i></button><button class="action-btn like" onclick="handleSwipe('like')"><i class="fas fa-heart"></i></button></div><div style="text-align:center;margin-top:20px;"><span id="swipeCount">0</span> profiles remaining</div>`; }
 function renderMatchesPage() { return `<div class="header"><h1 class="page-title">Matches</h1><div class="header-icons"><span onclick="openFilters()"><i class="fas fa-filter"></i></span><span onclick="openSettingsModal()"><i class="fas fa-sliders-h"></i></span></div></div><div class="messages-list" id="allMatchesList"></div>`; }
 function renderProfilePage() { return `<div class="profile-main-container"><div class="profile-hero-section"><div class="profile-hero-content"><div class="profile-hero-avatar" onclick="openAvatarUploadModal()"><span id="profileLargeAvatarEmoji">${currentUser?.avatar || '😊'}</span><img id="profileLargeAvatarImg" src="${currentUser?.avatarUrl || ''}" style="${currentUser?.avatarUrl ? 'display:block;width:100%;height:100%;object-fit:cover;position:absolute;' : 'display:none;'}"></div><div class="profile-hero-info"><h1>${currentUser?.name || 'User'}${currentUser?.age ? ', ' + currentUser.age : ''}</h1><div><i class="fas fa-map-marker-alt"></i> ${currentUser?.location || 'Add location'}</div><div class="profile-hero-bio"><i class="fas fa-quote-left"></i> ${currentUser?.bio || 'Tell the world about yourself!'}</div><button class="profile-edit-btn" onclick="openProfileModal()"><i class="fas fa-edit"></i> Edit Profile</button></div></div></div><div class="profile-stats-grid"><div class="stat-card"><i class="fas fa-heart"></i><div class="stat-value">${Object.keys(matchesData).length}</div><div class="stat-label">Matches</div></div><div class="stat-card"><i class="fas fa-thumbs-up"></i><div class="stat-value">${currentUser?.likes || 0}</div><div class="stat-label">Likes</div></div><div class="stat-card"><i class="fas fa-eye"></i><div class="stat-value">${currentUser?.views || 0}</div><div class="stat-label">Views</div></div></div><div class="profile-info-grid"><div class="info-card"><h4><i class="fas fa-venus-mars"></i> Gender</h4><p>${currentUser?.gender || 'Not specified'}</p></div><div class="info-card"><h4><i class="fas fa-heart"></i> Interested In</h4><p>${currentUser?.interestedIn || 'Everyone'}</p></div></div><div class="interests-section"><h3><i class="fas fa-star"></i> Interests</h3><div class="interest-tags" id="interestsContainer"></div></div><div class="photos-section"><h3><i class="fas fa-images"></i> Photos</h3><div class="photos-grid" id="photosGrid"></div></div></div>`; }
-function renderPhotosGrid() { let html = ''; const photos = currentUser?.photos || {}; Object.values(photos).forEach(p => html += `<div class="photo-item" onclick="viewPhoto('${p}')"><img src="${p}"></div>`); for (let i=Object.keys(photos).length; i<5; i++) html += `<div class="photo-item add" onclick="addPhoto()"><i class="fas fa-plus"></i></div>`; return html; }
+function renderPhotosGrid() { let html = ''; const photos = currentUser?.photos || {}; Object.values(photos).forEach(p => html += `<div class="photo-item" onclick="viewFullImage('${p}')"><img src="${p}"></div>`); for (let i=Object.keys(photos).length; i<5; i++) html += `<div class="photo-item add" onclick="openPhotoUpload()"><i class="fas fa-plus"></i></div>`; return html; }
 function renderMatches() { const grid = document.getElementById('matchesGrid'); if(!grid) return; grid.innerHTML = ''; Object.keys(matchesData).slice(0,4).forEach(id => { const u = usersData[id] || {}; const d = document.createElement('div'); d.className = 'match-item'; d.onclick = () => openChat({ id, ...u }); d.innerHTML = `<div class="match-avatar">${u.avatarUrl ? `<img src="${u.avatarUrl}">` : `<span>${u.avatar || '👤'}</span>`}</div><div class="match-name">${u.name || 'User'}</div>`; grid.appendChild(d); }); if(Object.keys(matchesData).length===0) grid.innerHTML = '<div style="text-align:center;padding:20px;grid-column:span 4;">No matches yet</div>'; }
 function renderMessages() { const list = document.getElementById('messagesList'); if(!list) return; list.innerHTML = ''; Object.keys(messagesData).slice(0,5).forEach(key => { const msg = messagesData[key]; const u = usersData[msg.senderId] || {}; const d = document.createElement('div'); d.className = 'message-item'; d.onclick = () => openChat({ id: msg.senderId, ...u }); d.innerHTML = `<div class="message-avatar">${u.avatarUrl ? `<img src="${u.avatarUrl}">` : `<span>${u.avatar || '👤'}</span>`}</div><div class="message-details" style="flex:1;"><div><strong>${u.name || 'User'}</strong> <span style="font-size:12px;color:#95a5a6;">${msg.time || 'Now'}</span></div><div style="font-size:13px;">${msg.text || 'New message'}</div></div>`; list.appendChild(d); }); if(Object.keys(messagesData).length===0) list.innerHTML = '<div style="text-align:center;padding:20px;">No messages yet</div>'; }
 function renderAllMatches() { const list = document.getElementById('allMatchesList'); if(!list) return; list.innerHTML = ''; Object.keys(matchesData).forEach(id => { const u = usersData[id] || {}; const d = document.createElement('div'); d.className = 'message-item'; d.onclick = () => openChat({ id, ...u }); d.innerHTML = `<div class="message-avatar">${u.avatarUrl ? `<img src="${u.avatarUrl}">` : `<span>${u.avatar || '👤'}</span>`}</div><div class="message-details" style="flex:1;"><div><strong>${u.name}${u.age ? ', '+u.age : ''}</strong></div><div style="font-size:13px;">Start chatting!</div></div>`; list.appendChild(d); }); if(Object.keys(matchesData).length===0) list.innerHTML = '<div style="text-align:center;padding:40px;">No matches yet</div>'; }
-function renderDiscoverGrid() { const grid = document.getElementById('discoverGrid'); if(!grid) return; grid.innerHTML = ''; Object.keys(discoverProfilesData).slice(0,12).forEach(id => { const p = discoverProfilesData[id]; const card = document.createElement('div'); card.className = 'discover-card'; card.onclick = () => viewProfile(p); card.innerHTML = `<div class="discover-card-image">${p.avatarUrl ? `<img src="${p.avatarUrl}">` : `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:white;font-size:48px;">${p.avatar || '👤'}</div>`}</div><div class="discover-card-info"><div class="discover-card-name">${p.name}${p.age ? ', '+p.age : ''}</div><div class="discover-card-distance"><i class="fas fa-map-marker-alt"></i> ${p.location || 'Nearby'}</div></div>`; grid.appendChild(card); }); if(Object.keys(discoverProfilesData).length===0) grid.innerHTML = '<div style="text-align:center;padding:40px;grid-column:span 3;">No profiles to discover</div>'; }
+function renderDiscoverGrid() { const grid = document.getElementById('discoverGrid'); if(!grid) return; grid.innerHTML = ''; Object.keys(discoverProfilesData).slice(0,12).forEach(id => { const p = discoverProfilesData[id]; const card = document.createElement('div'); card.className = 'discover-card'; card.onclick = () => viewOtherProfile(p); card.innerHTML = `<div class="discover-card-image">${p.avatarUrl ? `<img src="${p.avatarUrl}">` : `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:white;font-size:48px;">${p.avatar || '👤'}</div>`}</div><div class="discover-card-info"><div class="discover-card-name">${p.name}${p.age ? ', '+p.age : ''}</div><div class="discover-card-distance"><i class="fas fa-map-marker-alt"></i> ${p.location || 'Nearby'}</div></div>`; grid.appendChild(card); }); if(Object.keys(discoverProfilesData).length===0) grid.innerHTML = '<div style="text-align:center;padding:40px;grid-column:span 3;">No profiles to discover</div>'; }
+function viewOtherProfile(user) { const photosHtml = Object.values(user.photos || {}).map(url => `<div class="photo-item" onclick="viewFullImage('${url}')"><img src="${url}"></div>`).join('') || '<p>No photos uploaded</p>'; const interestsHtml = Object.values(user.interests || {}).map(i => `<span class="interest-tag selected">${i}</span>`).join(''); const modal = document.getElementById('profileViewerContent'); modal.innerHTML = `<div style="text-align:center;"><div style="width:120px;height:120px;border-radius:50%;margin:0 auto;overflow:hidden;background:#f8f9fa;">${user.avatarUrl ? `<img src="${user.avatarUrl}" style="width:100%;height:100%;object-fit:cover;">` : `<span style="font-size:60px;">${user.avatar||'👤'}</span>`}</div><h2>${user.name}${user.age?', '+user.age:''}</h2><p><i class="fas fa-map-marker-alt"></i> ${user.location||'Not specified'}</p><p><i class="fas fa-quote-left"></i> ${user.bio||'No bio yet'}</p><div><strong>Gender:</strong> ${user.gender||'Not specified'} | <strong>Interested in:</strong> ${user.interestedIn||'Everyone'}</div><div class="interests-section" style="margin-top:15px;"><h4>Interests</h4><div class="interest-tags">${interestsHtml||'None'}</div></div><div class="photos-section"><h4>Photos</h4><div class="photos-grid" style="grid-template-columns:repeat(2,1fr);">${photosHtml}</div></div></div>`; document.getElementById('profileViewerModal').classList.add('active'); }
+function viewFullImage(url) { document.getElementById('fullImageView').src = url; document.getElementById('photoViewerModal').classList.add('active'); }
 function updateSwipeCard() { const ids = Object.keys(swipeProfilesData); if(ids.length===0) return; if(currentSwipeIndex>=ids.length) currentSwipeIndex=0; const p = swipeProfilesData[ids[currentSwipeIndex]]; const nameEl = document.getElementById('swipeName')||document.getElementById('swipeProfileName'); const locEl = document.getElementById('swipeLocation')||document.getElementById('swipeProfileLocation'); const badgesEl = document.getElementById('swipeBadges')||document.getElementById('swipeProfileBadges'); const countEl = document.getElementById('swipeCount'); const imgEl = document.getElementById('swipeCardImg')||document.getElementById('swipeCardImg2'); if(nameEl) nameEl.textContent = `${p.name}${p.age?', '+p.age:''}`; if(locEl) locEl.textContent = `📍 ${p.location||'Nearby'}`; if(imgEl && p.avatarUrl) imgEl.src = p.avatarUrl; if(badgesEl) { badgesEl.innerHTML = ''; Object.values(p.interests||{}).slice(0,3).forEach(i => { const b = document.createElement('span'); b.className = 'badge'; b.textContent = i; badgesEl.appendChild(b); }); } if(countEl) countEl.textContent = `${currentSwipeIndex+1}/${ids.length}`; }
 function initializeSwipe() { currentSwipeIndex = 0; updateSwipeCard(); }
 async function handleSwipe(action) { const ids = Object.keys(swipeProfilesData); if(ids.length===0) { showToast('No Profiles', 'No more profiles', '😕'); return; } const pid = ids[currentSwipeIndex]; const p = swipeProfilesData[pid]; showToast(action==='like'?'Liked!':action==='super'?'Super Liked!':'Passed', `${action==='like'?'You liked':action==='super'?'You super liked':'You passed on'} ${p.name}`, action==='like'?'💕':action==='super'?'⭐':'👋'); if(action==='like'||action==='super') { try { await database.ref(`swipes/${currentUser.uid}/${pid}`).set({ action, timestamp: Date.now() }); const their = await database.ref(`swipes/${pid}/${currentUser.uid}`).once('value'); if(their.exists() && (their.val().action==='like'||their.val().action==='super')) { await database.ref(`matches/${currentUser.uid}/${pid}`).set({ matchedAt: Date.now() }); await database.ref(`matches/${pid}/${currentUser.uid}`).set({ matchedAt: Date.now() }); showToast('It\'s a Match!', `You matched with ${p.name}`, '🎉'); } } catch(e) {} } currentSwipeIndex = (currentSwipeIndex+1)%ids.length; updateSwipeCard(); }
@@ -318,7 +237,10 @@ function openSettingsModal() { document.getElementById('settingsModal').classLis
 function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 function openAvatarUploadModal() { document.getElementById('avatarUploadModal').classList.add('active'); }
 function handleAvatarSelect(e) { const file = e.target.files[0]; if(!file) return; selectedAvatarFile = file; const reader = new FileReader(); reader.onload = (ev) => { document.getElementById('avatarPreviewImg').src = ev.target.result; document.getElementById('avatarPreviewImg').style.display = 'block'; document.getElementById('avatarPreviewEmoji').style.display = 'none'; document.getElementById('uploadAvatarBtn').disabled = false; }; reader.readAsDataURL(file); }
-async function uploadAvatar() { if(!selectedAvatarFile||!currentUser) return; const btn = document.getElementById('uploadAvatarBtn'); btn.disabled = true; const progress = document.getElementById('uploadProgress'); progress.style.display = 'block'; try { const ref = storage.ref().child(`avatars/${currentUser.uid}/${Date.now()}_${selectedAvatarFile.name}`); const upload = await ref.put(selectedAvatarFile); const url = await upload.ref.getDownloadURL(); await database.ref(`users/${currentUser.uid}`).update({ avatarUrl: url }); showToast('Success', 'Avatar updated', '✅'); closeModal('avatarUploadModal'); } catch(e) { showToast('Error', 'Upload failed', '❌'); } finally { btn.disabled = false; progress.style.display = 'none'; } }
+async function uploadAvatar() { if(!selectedAvatarFile||!currentUser) return; const btn = document.getElementById('uploadAvatarBtn'); btn.disabled = true; try { const ref = storage.ref().child(`avatars/${currentUser.uid}/${Date.now()}_${selectedAvatarFile.name}`); await ref.put(selectedAvatarFile); const url = await ref.getDownloadURL(); await database.ref(`users/${currentUser.uid}`).update({ avatarUrl: url }); showToast('Success', 'Avatar updated', '✅'); closeModal('avatarUploadModal'); } catch(e) { showToast('Error', 'Upload failed', '❌'); } finally { btn.disabled = false; } }
+function openPhotoUpload() { document.getElementById('photoUploadModal').classList.add('active'); selectedGalleryFile = null; document.getElementById('galleryPreviewImg').style.display='none'; document.getElementById('uploadGalleryBtn').disabled=true; }
+function previewGalleryPhoto(e) { const file = e.target.files[0]; if(!file) return; selectedGalleryFile = file; const reader = new FileReader(); reader.onload = ev => { document.getElementById('galleryPreviewImg').src = ev.target.result; document.getElementById('galleryPreviewImg').style.display = 'block'; document.getElementById('uploadGalleryBtn').disabled = false; }; reader.readAsDataURL(file); }
+async function uploadGalleryPhoto() { if(!selectedGalleryFile||!currentUser) return; const btn = document.getElementById('uploadGalleryBtn'); btn.disabled = true; try { const ref = storage.ref().child(`photos/${currentUser.uid}/${Date.now()}_${selectedGalleryFile.name}`); await ref.put(selectedGalleryFile); const url = await ref.getDownloadURL(); const photos = currentUser.photos || {}; const pid = Date.now(); photos[pid] = url; await database.ref(`users/${currentUser.uid}/photos`).set(photos); showToast('Success', 'Photo added', '📸'); closeModal('photoUploadModal'); renderPhotos(); } catch(e) { showToast('Error', 'Upload failed', '❌'); } finally { btn.disabled = false; } }
 async function openChat(user) { selectedChatUser = user; document.getElementById('chatUserName').textContent = user.name; document.getElementById('chatUserStatus').innerHTML = '<span class="status-dot online"></span> Online'; await loadChatMessages(user.id); document.getElementById('chatModal').classList.add('active'); }
 function getChatId(u1,u2) { return u1<u2 ? `${u1}_${u2}` : `${u2}_${u1}`; }
 async function loadChatMessages(otherId) { if(!selectedChatUser||!currentUser) return; const cid = getChatId(currentUser.uid, otherId); if(activeListeners[`chat_${cid}`]) activeListeners[`chat_${cid}`].off(); activeListeners[`chat_${cid}`] = database.ref(`chats/${cid}/messages`).orderByChild('timestamp'); activeListeners[`chat_${cid}`].on('value', snap => renderChatMessages(snap.val()||{})); }
@@ -331,9 +253,8 @@ async function addInterest() { const ni = prompt('Enter a new interest:'); if(ni
 async function removeInterest(i) { const ints = currentUser?.interests||{}; const key = Object.keys(ints).find(k=>ints[k]===i); if(key) { delete ints[key]; await database.ref(`users/${currentUser.uid}/interests`).set(ints); renderInterests(); } }
 function openNotifications() { showToast('Notifications', 'No new notifications', '🔔'); }
 function openFilters() { showToast('Filters', 'Filter options', '🔍'); }
-function viewProfile(p) { showToast('Profile', `Viewing ${p.name}'s profile`, '👤'); }
-function addPhoto() { showToast('Coming Soon', 'Add photo feature coming soon', '📷'); }
-function viewPhoto(p) { showToast('Photo', 'Viewing photo', '🖼️'); }
+function addPhoto() { openPhotoUpload(); }
+function viewPhoto(p) { viewFullImage(p); }
 function openNotificationSettings() { closeModal('settingsModal'); showToast('Settings', 'Notification settings', '🔔'); }
 function openPrivacySettings() { closeModal('settingsModal'); showToast('Settings', 'Privacy settings', '🔒'); }
 function openSubscriptionPage() { closeModal('settingsModal'); showToast('Premium', 'Subscription plans coming soon', '⭐'); }
